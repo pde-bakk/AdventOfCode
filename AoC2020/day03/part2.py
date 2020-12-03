@@ -1,4 +1,4 @@
-lines = open("day03/input", 'r').readlines()
+lines = open("abel.txt", 'r').readlines()
 trees = 0
 x = 1, 3, 5, 7, 1
 y = 1, 1, 1, 1, 2
