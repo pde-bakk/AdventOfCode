@@ -1,11 +1,6 @@
-lines = open("day03/input", 'r').readlines()
-trees = 0
-index = -3
-llen = len(lines[0]) - 1
+lines = open("day03/input", 'r').read().splitlines()
+trees = index = 0
 for line in lines:
-	index += 3
-	index = index % llen
-	if line[index] == '#':
-		trees += 1
-
+	if line[index] == '#': trees += 1
+	index = (index + 3) % len(line)
 print(trees)
