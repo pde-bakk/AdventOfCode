@@ -1,4 +1,3 @@
-highest = seat = 0
 mylist = [i for i in range(53, 896 + 1)]
 with open("input") as myfile:
 	for line in myfile:
