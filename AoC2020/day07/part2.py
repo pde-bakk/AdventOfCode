@@ -7,23 +7,19 @@ def clean(s):
 
 lines = open("input", 'r').read().split("\n")
 children = defaultdict(list)
-parents = defaultdict(list)
-golds = set()
-S = ['shiny gold']
 for line in lines:
 	parent, rest = line.split(" bags contain ")
 	parent = clean(parent)
 	if 'no other' in rest:
 		continue
 	for child in map(clean, rest.split(", ")):
-		count, child = child.split(' ', 1)
+		count, child = child.split(' ', 1)  # only splits on the first space
 		child = clean(child)
 		children[parent].append((int(count), child))
-		parents[child].append(parent)
 
 S = [('shiny gold', 1)]
 res2 = 0
-while S:
+while len(S):
 	cur, mult = S.pop()
 	for count, child in children[cur]:
 		res2 += count * mult
