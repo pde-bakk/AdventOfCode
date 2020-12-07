@@ -21,13 +21,6 @@ for line in lines:
 		children[parent].append((int(count), child))
 		parents[child].append(parent)
 
-while S:
-	cur = S.pop()
-	for parent in parents[cur]:
-		golds.add(parent)
-		S.append(parent)
-print("Part 1: ", len(golds))
-
 S = [('shiny gold', 1)]
 res2 = 0
 while S:
@@ -35,4 +28,4 @@ while S:
 	for count, child in children[cur]:
 		res2 += count * mult
 		S.append((child, count * mult))
-print("Part 2: ", res2)
+print("Part 2: ", res2)  # 1664
