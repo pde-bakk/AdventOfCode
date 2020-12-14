@@ -12,6 +12,7 @@ for row in rows:
         for i in range(1, len(mask) + 1):
             if mask[-i] == '0' and value & bit > 0:
                 value -= bit
+                # value &= ~(1 << bit) ## I wanted to use this, but it's way slower with big integers
             elif mask[-i] == '1' and value & bit == 0:
                 value += bit
             bit *= 2
