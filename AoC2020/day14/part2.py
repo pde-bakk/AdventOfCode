@@ -16,7 +16,6 @@ for row in rows:
 	if row[:4] == 'mask':
 		mask = row[7:]
 	else:
-		slet = set()
 		pos, value = map(int, re.findall(r'\d+', row))
 		bit = int(2 ** (len(mask) - 1))
 		xs = set()
