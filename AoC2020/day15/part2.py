@@ -3,7 +3,6 @@ d = dict()
 for i in range(len(nbs) - 1):
 	d[nbs[i]] = i
 val = nbs[-1]
-# print(d)
 for i in range(len(nbs) - 1, 30000000 - 1):
 	try:
 		d[val], val = i, i - d[val]
