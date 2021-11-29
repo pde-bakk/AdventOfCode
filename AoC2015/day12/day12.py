@@ -6,7 +6,7 @@ def recurse(whatever) -> int:
 	if isinstance(whatever, list):
 		for item in whatever:
 			total += recurse(item)
-	elif isinstance(whatever, dict):
+	elif isinstance(whatever, dict) and 'red' not in whatever.values():
 		for item in whatever:
 			total += recurse(whatever[item])
 	elif isinstance(whatever, int):
@@ -14,9 +14,5 @@ def recurse(whatever) -> int:
 	return total
 
 
-def part1(filename: str) -> int:
-	js = json.load(open(filename, 'r'))
-	return sum([recurse(item) for item in js])
-
-
-print(f'the answer is {part1("input.txt")}')
+js = json.load(open('input.txt', 'r'))
+print(sum([recurse(item) for item in js]))
