@@ -1,10 +1,6 @@
 from itertools import permutations
 
 
-names = set()
-happinesses = dict()
-
-
 def parse_names(lines: list):
 	for line in lines:
 		words = line.split()
@@ -19,26 +15,21 @@ def parse_names(lines: list):
 
 def permute() -> int:
 	options = [list(x) for x in permutations(names)]
-	total_happ, total_change, best_option = 0, 0, None
+	total_happ, best_option = 0, None
 	for option in options:
 		if option[0] != 'Bob':  # Chair position does not matter, only their order
 			continue
 		table_happ, table_change = 0, 0
 		for idx, person in enumerate(option):
 			left_change = happinesses[person][option[idx - 1]]
-			# print(f'idx={idx}, person={person} left={option[idx - 1]} ({left_change})')
 			if idx == len(option) - 1:
 				idx = -1
 			right_change = happinesses[person][option[idx + 1]]
-			# print(f'idx={idx}, person={person} right={option[idx + 1]} ({right_change})')
 			table_happ += left_change + right_change
-			table_change += abs(left_change) + abs(right_change)
-		print(f'{option} gives {table_happ}')
 		if table_happ > total_happ:
-			total_happ, total_change, best_option = table_happ, table_change, option
-		# print(option)
-	print(f'{total_happ}, {total_change}, {best_option}')
-	return total_change
+			total_happ, best_option = table_happ, option
+	print(f'{total_happ}, {best_option}')
+	return total_happ
 
 
 def part2():
@@ -49,9 +40,10 @@ def part2():
 	names.add("Peer")
 
 
+names = set()
+happinesses = dict()
 parse_names(open('input.txt', 'r').readlines())
 part2()
-
 print(names)
 print(happinesses)
 print(permute())
