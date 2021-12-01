@@ -10,6 +10,7 @@ def get_input(day, year=datetime.datetime.today().year):
 		print('Please provide the env variable "AOC_SESSION" with your session token', file=sys.stderr)
 		sys.exit(1)
 	print(f'url={url}')
+	os.environ['AOC_SESSION'] = os.environ['AOC_SESSION'].replace('session=', '')
 	r = requests.get(url=url, cookies={'session': os.environ['AOC_SESSION']})
 	if r.status_code != requests.codes.ok:
 		print(f"Can't retrieve the input file, unfortunately, status code = {r.status_code}", file=sys.stderr)
