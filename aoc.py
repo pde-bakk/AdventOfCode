@@ -5,10 +5,11 @@ import sys
 
 
 def get_input(day, year=datetime.datetime.today().year):
-	url = f'https://adventofcode.com/{year}/day/{day:02d}/input'
+	url = f'https://adventofcode.com/{year}/day/{day:01d}/input'
 	if not os.environ['AOC_SESSION']:
 		print('Please provide the env variable "AOC_SESSION" with your session token', file=sys.stderr)
 		sys.exit(1)
+	print(f'url={url}')
 	r = requests.get(url=url, cookies={'session': os.environ['AOC_SESSION']})
 	if r.status_code != requests.codes.ok:
 		print(f"Can't retrieve the input file, unfortunately, status code = {r.status_code}", file=sys.stderr)
