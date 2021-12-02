@@ -5,11 +5,10 @@ import sys
 
 
 def get_input(day, year=datetime.datetime.today().year):
-	url = f'https://adventofcode.com/{year}/day/{day:01d}/input'
+	url = f'https://adventofcode.com/{year}/day/{day}/input'
 	if not os.environ['AOC_SESSION']:
 		print('Please provide the env variable "AOC_SESSION" with your session token', file=sys.stderr)
 		sys.exit(1)
-	print(f'url={url}')
 	os.environ['AOC_SESSION'] = os.environ['AOC_SESSION'].replace('session=', '')
 	r = requests.get(url=url, cookies={'session': os.environ['AOC_SESSION']})
 	if r.status_code != requests.codes.ok:
@@ -19,8 +18,12 @@ def get_input(day, year=datetime.datetime.today().year):
 	return [x for x in content.splitlines()]
 
 
-if __name__ == '__main__':
+def get_todays_input_file():
 	today = datetime.date.today()
 	day, year = f'{today.day:02d}', str(today.year)
 	with open(os.path.join(year, f'day{day}', 'input.txt'), 'w') as f:
 		f.writelines('\n'.join(get_input(today.day, today.year)))
+
+
+if __name__ == '__main__':
+	get_todays_input_file()
