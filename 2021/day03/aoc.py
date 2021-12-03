@@ -1,13 +1,7 @@
-def find_most_common_value(r: list, idx: int) -> str:
-	zeroes, ones = 0, 0
-	for row in r:
-		if row[idx] == '0':
-			zeroes += 1
-		elif row[idx] == '1':
-			ones += 1
-	if zeroes > ones:
-		return '0'
-	return '1'
+def find_most_common_value(rows: list, idx: int) -> str:
+	if len([1 for row in rows if row[idx] == '1']) >= len(rows) / 2:
+		return '1'
+	return '0'
 
 
 def invert_value(bit: str) -> str:
@@ -16,8 +10,8 @@ def invert_value(bit: str) -> str:
 
 def part1():
 	gamma, epsilon = '', ''
-	for i in range(len(rows[0])):
-		most_common = find_most_common_value(rows, i)
+	for i in range(len(lines[0])):
+		most_common = find_most_common_value(lines, i)
 		gamma += most_common
 		epsilon += invert_value(most_common)
 	print(f'Gamma: {gamma} ({int(gamma, 2)}), Epsilon: {epsilon} ({int(epsilon, 2)})')
@@ -25,16 +19,16 @@ def part1():
 	return int(gamma, 2) * int(epsilon, 2)
 
 
-def get_rating(r: list, co2: bool):
-	length = len(r[0])
+def get_rating(rows: list, co2: bool):
+	length = len(rows[0])
 	for i in range(length):
-		if len(r) == 1:
+		if len(rows) == 1:
 			break
-		currbit = find_most_common_value(r, i)
+		currbit = find_most_common_value(rows, i)
 		if co2:
 			currbit = invert_value(currbit)
-		r = [row for row in r if row[i] == currbit]
-	return r[0]
+		rows = [row for row in rows if row[i] == currbit]
+	return rows[0]
 
 
 def part2(r: list):
@@ -44,6 +38,6 @@ def part2(r: list):
 	return int(oxygen, 2) * int(co2, 2)
 
 
-rows = open('input.txt').read().splitlines()
+lines = open('input.txt').read().splitlines()
 print(f'part1: {part1()}')
-print(f'part2: {part2(rows)}')
+print(f'part2: {part2(lines)}')
