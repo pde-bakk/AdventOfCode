@@ -5,16 +5,15 @@ import math
 class Board:
 	def __init__(self, string):
 		nbs = [int(x) for x in string.split()]
+		self.numbers = set(nbs)
 		size = int(math.sqrt(len(nbs)))
 		self.matrix = np.array(nbs, dtype=np.int16).reshape((size, size))
 
 	def mark_nb(self, nb: int):
-		found = np.where(self.matrix == nb)
-		try:
+		if nb in self.numbers:
+			found = np.where(self.matrix == nb)
 			y, x = found[0][0], found[1][0]
 			self.matrix[y][x] = -1
-		except IndexError:
-			pass
 
 	def is_solved(self) -> bool:
 		for i in range(self.matrix.shape[0]):
@@ -50,5 +49,5 @@ def part2(bingoboards: list[Board]):
 lines = open('input.txt').read().split('\n\n')
 nbs_todraw = [int(x) for x in lines.pop(0).split(',')]
 boards = [Board(b) for b in lines]
-print(f'Part1: {part1(boards)}')
+# print(f'Part1: {part1(boards)}')
 print(f'Part2: {part2(boards)}')
