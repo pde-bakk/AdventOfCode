@@ -28,10 +28,6 @@ class Board:
 		return sum([x[1] for x in np.ndenumerate(self.matrix) if x[1] != -1])
 
 
-def setup_boards() -> list[Board]:
-	return [Board(b) for b in lines]
-
-
 def part1(bingoboards: list[Board]):
 	for x in nbs_todraw:
 		for b in bingoboards:
@@ -53,6 +49,6 @@ def part2(bingoboards: list[Board]):
 
 lines = open('input.txt').read().split('\n\n')
 nbs_todraw = [int(x) for x in lines.pop(0).split(',')]
-boards = setup_boards()
+boards = [Board(b) for b in lines]
 print(f'Part1: {part1(boards)}')
 print(f'Part2: {part2(boards)}')
