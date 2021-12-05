@@ -25,4 +25,4 @@ def day05(rows: list[str], part2: bool):
 
 lines = open("input.txt").read().splitlines()
 print(f'Part1: {day05(lines, False)}')
-# print(f'Part2: {day05(lines, True)}')
+print(f'Part2: {day05(lines, True)}')
