@@ -20,10 +20,9 @@ def day05(rows: list[str], part2: bool):
 					break
 				start[0] += 1 if end[0] > start[0] else -1
 				start[1] += 1 if end[1] > start[1] else -1
-			pass
 	return len([1 for x in np.ndenumerate(floor) if x[1] >= 2])
 
 
 lines = open("input.txt").read().splitlines()
 print(f'Part1: {day05(lines, False)}')
-print(f'Part2: {day05(lines, True)}')
+# print(f'Part2: {day05(lines, True)}')
