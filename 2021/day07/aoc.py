@@ -19,7 +19,7 @@ def part2():
 		for x in poses:
 			diff = abs(x - i)
 			if diff not in dists:
-				dists[diff] = sum([x for x in range(diff + 1)])
+				dists[diff] = (diff * diff + diff) // 2
 			subtotal += dists[diff]
 		if subtotal < total:
 			total = subtotal
