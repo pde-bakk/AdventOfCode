@@ -46,52 +46,50 @@ def print_letters(letters: dict) -> None:
 	print(f' {letters[6] * 3}')
 
 
+# yet to do 2, 5, 6, 9
+
 def set_hard(items: list[str], patterns: dict) -> dict:
 	segments = {x: '' for x in range(7)}
-	segments[0] = list(patterns[7] - patterns[1])[0]
-	# print(f'patterns={patterns}')
-	# print(f'segments={segments}')
-	# print(f'0.diff between patterns7 and patterns1 = {patterns[7] - patterns[1]}')
-	segments[6] = list(patterns[3] - patterns[4] - {segments[0]})[0]
-	# print(f'diff only between 3 and 4: {patterns[3] - patterns[4]}')
-	# print(f'6.diff between patterns3 and patterns4 and segment0 = {(patterns[3] - patterns[4]) - {segments[0]}}')
-	# print(f'segments[0]={segments[0]}')
-	# print(f'segments[6]={segments[6]}')
-	patterns[9] = patterns[4].union({segments[0], segments[6]})
-	# print(f'patterns[9] would be {patterns[4]} + {segments[0]} + {segments[6]}')
-	# print(f'patterns[9]={patterns[9]}')
-	segments[4] = list(patterns[8] - patterns[9])[0]
-	segments[3] = list(patterns[3] - patterns[7] - {segments[6]})[0]
-	patterns[0] = patterns[8] - {segments[3]}
-	# print(f'segments = {segments}')
-	# print_letters(segments)
-	# print(f'patterns8 ({patterns[8]}) - segments[3] ({segments[3]}) would be {patterns[0]}')
-	for op in items:
-		opset = set(op)
-		if len(opset) == 6 and opset != patterns[9] and opset != patterns[0]:
-			patterns[6] = opset
-			segments[2] = list(patterns[8] - patterns[6])[0]
-			segments[5] = list(patterns[1] - {segments[2]})[0]
-			# print(f'patterns6 = {patterns[6]}, segments2 = {segments[2]}')
-			break
+	print(f'4-3={patterns[4] - patterns[3]}')
+	print(f'3-4={patterns[3] - patterns[4]}')
+	print(f'items is {items}')
+	for item in items:
+		if len(item) in [2, 3, 4, 7]:
+			continue
+		# print(f'item={item}')
+		if len(item) == 6:  # Item is one of patterns 0, 6, 9
+			eightdiff = list(patterns[8] - set(item))[0]
+			if list(eightdiff)[0] in patterns[1]:  # Item is pattern 6, eightdiff is segment 2
+				# print(f'Found pattern 6 in item {item}, eightdiff = {eightdiff} (segment 2)')
+				patterns[6] = set(item)
+				segments[2] = eightdiff
+			elif eightdiff in patterns[4]:  # eightdiff is segment 3, item is pattern 0
+				# print(f'Found pattern 0 in item {item}, eightdiff = {eightdiff} (segment 3)')
+				patterns[0] = set(item)
+				segments[3] = eightdiff
+			else:  # eightdiff is segment 4, item is pattern 9
+				# print(f'Found pattern 9 in item {item}, eightdiff = {eightdiff} (segment 4)')
+				patterns[9] = set(item)
+				segments[4] = eightdiff
 
-	segments[1] = list(patterns[4] - patterns[1] - {segments[3]})[0]
-	patterns[2] = patterns[8] - {segments[1]} - {segments[5]}
-	# print(f'segment2={segments[2]}, and segment4={segments[4]}')
-	patterns[5] = patterns[8] - {segments[2]} - {segments[4]}
-	# print_letters(letters)
+	for item in items:
+		if len(item) in [2, 3, 4, 7]:
+			continue
+		elif len(item) == 5:
+			eightdiff = list(patterns[8] - set(item))
+			print(f'{item}, eightdiff is {eightdiff}')
+			if eightdiff[0] not in patterns[1] and eightdiff[1] not in patterns[1]:  # Item=3, segments are 1 and 4
+				print(f'Found pattern 3 in item {item}, eightdiff={eightdiff}')
+				patterns[3] = set(item)
+			else:
+				sixdiff = list(patterns[6] - set(item))
+				print(f'patterns[6] = {patterns[6]}, sixdiff = {sixdiff}')
+				if len(sixdiff) == 1:
+					patterns[5] = set(item)
+				else:
+					patterns[2] = set(item)
 	print(f'segments={segments}')
 	print(f'patterns={patterns}')
-	assert len(patterns[0]) == 6
-	assert len(patterns[1]) == 2
-	assert len(patterns[2]) == 5
-	assert len(patterns[3]) == 5
-	assert len(patterns[4]) == 4
-	assert len(patterns[5]) == 5
-	assert len(patterns[6]) == 6
-	assert len(patterns[7]) == 3
-	assert len(patterns[8]) == 7
-	assert len(patterns[9]) == 6
 	return patterns
 
 
