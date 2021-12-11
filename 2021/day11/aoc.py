@@ -32,21 +32,24 @@ def part1(curr: list[list[int]]) -> int:
 
 	# newstate = deepcopy(curr)
 	flashes = 0
-	for step in range(100):
+	for step in range(1000):
+		stepflashes = 0
 		for y, row in enumerate(curr):
 			for x, octo in enumerate(row):
 				curr[y][x] += 1
 		for y, row in enumerate(curr):
 			for x, octo in enumerate(row):
 				if curr[y][x] > 9:
-					flashes += flash(y, x)
-
+					stepflashes += flash(y, x)
+		flashes += stepflashes
 		# reset energy levels
 		for y, row in enumerate(curr):
 			for x, octo in enumerate(row):
 				if curr[y][x] == -1:
 					curr[y][x] = 0
 		print_octos(curr, step)
+		if stepflashes == len(curr) * len(curr[0]):
+			return step + 1
 	return flashes
 
 
