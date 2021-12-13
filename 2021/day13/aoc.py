@@ -2,17 +2,16 @@ import numpy as np
 
 
 def day13(matrix, part) -> int:
-	for fold in fold_input.split('\n'):
-		f = fold.split('=')
-		if f[0][-1] == 'y':
-			fy = int(f[1])
+	for fold in folds:
+		if fold[0] == 'y':
+			fy = fold[1]
 			for y in range(1, ymax):
 				if fy + y >= matrix.shape[0]:
 					break
 				matrix[fy - y] |= matrix[fy + y]
 			matrix = matrix[:fy]
-		elif f[0][-1] == 'x':
-			fx = int(f[1])
+		elif fold[0] == 'x':
+			fx = fold[1]
 			for x in range(1, xmax):
 				if fx + x >= matrix.shape[1]:
 					break
@@ -33,6 +32,7 @@ def day13(matrix, part) -> int:
 
 dots, fold_input = open('input.txt').read().split('\n\n')
 dots = [[int(x) for x in row.split(',')] for row in dots.split('\n')]
+folds = [(f[0][-1], int(f[1])) for row in fold_input.split('\n') if (f := row.split('='))]
 xmax, ymax = 0, 0
 for dot in dots:
 	xmax = max(xmax, dot[0] + 1)
