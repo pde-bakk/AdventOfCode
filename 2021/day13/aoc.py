@@ -4,16 +4,11 @@ import numpy as np
 def day13(matrix, part) -> int:
 	for fold in fold_input.split('\n'):
 		f = fold.split('=')
-		# print(f'f={f}')
 		if f[0][-1] == 'y':
 			fy = int(f[1])
-			# print(f'fy={fy}')
-			# print(f'shape = {matrix.shape}')
 			for y in range(1, ymax):
 				if fy + y >= matrix.shape[0]:
 					break
-				# print(f'folding {fy+y} onto {fy-y}')
-				# print(f'folding {matrix[fy+y]} onto {matrix[fy-y]}')
 				matrix[fy - y] |= matrix[fy + y]
 			matrix = matrix[:fy]
 		elif f[0][-1] == 'x':
@@ -23,7 +18,6 @@ def day13(matrix, part) -> int:
 					break
 				matrix[:, fx - x] |= matrix[:, fx + x]
 			matrix = matrix[:, 0:fx]
-		# print(matrix, matrix.sum(), end='\n\n')
 		if part == 1:
 			break
 	if part == 2:
@@ -44,14 +38,9 @@ for dot in dots:
 	xmax = max(xmax, dot[0] + 1)
 	ymax = max(ymax, dot[1] + 1)
 
-print(xmax, ymax)
 grid = np.zeros(shape=(ymax, xmax), dtype=np.uint8)
 for dot in dots:
-	print(f'dot={dot}')
 	grid[dot[1]][dot[0]] = 1
-for g in grid:
-	print(g)
 
-print(f'here, range(10) = {range(10)}')
 print(f'Part1: {day13(grid, part=1)}')
 print(f'Part2: {day13(grid, part=2)}')
