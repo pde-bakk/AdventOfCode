@@ -32,7 +32,7 @@ def day13(matrix, part) -> int:
 
 dots, fold_input = open('input.txt').read().split('\n\n')
 dots = [[int(x) for x in row.split(',')] for row in dots.split('\n')]
-folds = [(f[0][-1], int(f[1])) for row in fold_input.split('\n') if (f := row.split('='))]
+folds = [(f[0][-1], int(f[1])) for row in fold_input.split('\n') if (f := row.split('=')) and row]
 xmax, ymax = 0, 0
 for dot in dots:
 	xmax = max(xmax, dot[0] + 1)
