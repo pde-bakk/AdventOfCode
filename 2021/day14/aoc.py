@@ -2,20 +2,12 @@ from collections import Counter
 
 
 polymer, second = open('input.txt').read().split('\n\n')
-
-instructions = {c: {} for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'}
-# instructions = {'B': {}, 'C': {}, 'H': {}, 'N': {}}
-for inst in second.split('\n'):
-	a, b = inst.split(' -> ')
-	instructions[a] = b
-
+instructions = {f[0]: f[1] for inst in second.split('\n') if inst and (f := inst.split(' -> '))}
 pairs = Counter((polymer[i:i+2]) for i in range(len(polymer) - 1))
-print(pairs)
 
-for step in range(40):
+for step in range(40000):
 	newnewpolymer = Counter()
 	for pair, count in pairs.items():
-		# print(f'pair={pair}, count={count}')
 		inbetweener = instructions[pair]
 		newnewpolymer[f'{pair[0]}{inbetweener}'] += count
 		newnewpolymer[f'{inbetweener}{pair[1]}'] += count
