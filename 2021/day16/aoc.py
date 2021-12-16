@@ -1,5 +1,7 @@
-class Packet:
+from functools import reduce
 
+
+class Packet:
 	def __init__(self):
 		self.type_id = None
 		self.nb_subpackets = None
@@ -38,6 +40,7 @@ class Packet:
 			idx += 1
 			print(f'length_type_id={self.length_type_id}')
 			if self.length_type_id == 0:
+				print(f'getting total bit length from {binary[idx:idx+15]}')
 				self.total_bit_len = int(binary[idx:idx+15], 2)
 				idx += 15
 				target = idx + self.total_bit_len
@@ -73,11 +76,47 @@ class Packet:
 			# res += p.get_versions()
 		return res
 
+	def __lt__(self, other):
+		print(f'lt: self={self.getvalue()}, other={other.getvalue()}')
+		return self.getvalue() < other.getvalue()
+
+	def __gt__(self, other):
+		return self.getvalue() > other.getvalue()
+
+	def __eq__(self, other):
+		return self.getvalue() == other.getvalue()
+
 	def __str__(self) -> str:
 		res = f'Packet with version {self.version} and type_id {self.type_id}\n'
 		for p in self.subpackets:
 			res += str(p)
 		return res
+
+	def getvalue(self) -> int:
+		print(self)
+		match self.type_id:
+			case 0:
+				return sum([p.getvalue() for p in self.subpackets])
+			case 1:
+				res = 1
+				for item in self.subpackets:
+					res *= item.getvalue()
+				return res
+				# return reduce(lambda x, y: x.getvalue() * y.getvalue(), self.subpackets)
+			case 2:
+				return min(self.subpackets).getvalue()
+			case 3:
+				return max(self.subpackets).getvalue()
+			case 4:
+				return self.value
+			case 5:
+				return int(self.subpackets[0] > self.subpackets[1])
+			case 6:
+				return int(self.subpackets[0] < self.subpackets[1])
+			case 7:
+				return int(self.subpackets[0] == self.subpackets[1])
+			case _:
+				return 0
 
 
 puzzle_input = open('input.txt').read()
@@ -89,5 +128,7 @@ if len(binary_rep) % 4:
 	binary_rep = '0' * (4 - len(binary_rep) % 4) + binary_rep
 packet = Packet()
 ret = packet.parse_packet(binary_rep)
-print(packet.get_versions())
+print(f'Part1: {packet.get_versions()}')
 # print(str(packet))
+bigvalue = packet.getvalue()
+print(f'Part2: {bigvalue}')
