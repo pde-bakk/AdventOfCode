@@ -40,7 +40,7 @@ class Pair:
 			raise ValueError
 
 	def giveleft(self, val: int, s):
-		print(f'giveleft, self={self}, val={val}, s={s}')
+		# print(f'giveleft, self={self}, val={val}, s={s}')
 		if self.y == s:
 			self.x += val
 		else:
@@ -50,9 +50,9 @@ class Pair:
 			elm.y += val
 
 	def giveright(self, val: int, s):
-		print(f'giveright, self={self}, val={val}, s={s}')
+		# print(f'giveright, self={self}, val={val}, s={s}')
 		if self.x == s:
-			print(f'TRUE')
+			# print(f'TRUE')
 			self.y -= -val
 		else:
 			elm = self.x
@@ -60,68 +60,80 @@ class Pair:
 				elm = elm.x
 			elm.x += val
 
-	def split(self) -> bool:
-		ret = False
+	def dosplit(self) -> bool:
+		for i, item in enumerate([self.x, self.y]):
+			if isinstance(item, int) and item >= 10:
+				# print(f'item = {item}')
+				half = item / 2
+				if i == 0:
+					self.x = Pair(item // 2, math.ceil(half))
+					self.x.parent = self
+					# print(f'SPLIT {item} into {self.x}')
+				# print(f'self.x={self.x}')
+				else:
+					self.y = Pair(item // 2, math.ceil(half))
+					self.y.parent = self
+					# print(f'SPLIT {item} into {self.y}')
+					# print(f'self.y={self.y}')
+				return True
+		return False
+
+	# def dosomething(self, depth: int = 0) -> bool:
+	# 	for i, item in enumerate([self.x, self.y]):
+	# 		if isinstance(item, Pair):
+	# 			# print(f'depth={depth}, item={item}')
+	# 			if depth == 3 and self.doexplode():
+	# 				return True
+	# 		else:
+	# 			if self.dosplit():
+	# 				return True
+	# 		if isinstance(item, Pair) and item.dosomething(depth + 1):
+	# 			return True
+	# 	return False
+
+	def first_explode(self, depth: int = 0) -> bool:
 		for i, item in enumerate([self.x, self.y]):
 			if isinstance(item, Pair):
-				tmpret = item.split()
-				if tmpret:
-					ret = True
-			else:
-				if item >= 10:
-					# print(f'item = {item}')
-					if i == 0:
-						self.x = Pair(math.floor(item / 2), math.ceil(item / 2))
-						self.x.parent = self
-						# print(f'self.x={self.x}')
-					else:
-						self.y = Pair(math.floor(item / 2), math.ceil(item / 2))
-						self.y.parent = self
-						# print(f'self.y={self.y}')
-					ret = True
-		return ret
-
-	def explode(self, depth: int = 0) -> bool:
-		ret = False
-		for item in [self.x, self.y]:
-			# print(f'checking {item}')
-			if isinstance(item, Pair):
-				if depth == 3:
-					# print(f'depth is 3, item ={item}')
-					left, right = item.x, item.y
-					p = self.parent
-					s = self
-					kkdepth = depth
-					if item == self.x:
-						print(f'item = self.x')
-						self.y -= -right
-						while p:
-							if p.x != s:
-								print(f'giving left, p={p}, s={s}, left={left}')
-								p.giveleft(left, s)
-								break
-							s = p
-							p = p.parent
-							kkdepth -= 1
-						self.x = 0
-					else:
-						self.x += left
-						while p:
-							# print(f'in p loop, p={p}, s={s} ,kkdepth={kkdepth}')
-							if p.y != s and kkdepth != 0:
-								# print(f'lets give right, p={p}, s={s}')
-								p.giveright(right, s)
-								break
-							s = p
-							p = p.parent
-							kkdepth -= 1
-						self.y = 0
+				if depth == 3 and self.doexplode():
 					return True
+				if item.first_explode(depth + 1):
+					return True
+		return False
+
+	def then_split(self) -> bool:
+		for i, item in enumerate([self.x, self.y]):
+			if self.dosplit():
+				return True
+			if isinstance(item, Pair) and item.then_split():
+				return True
+		return False
+
+	def doexplode(self) -> bool:
+		for item in [self.x, self.y]:
+			if isinstance(item, Pair):
+				# print(f'Exploding {item}')
+				left, right = item.x, item.y
+				p, s = self.parent, self
+				if item == self.x:
+					self.y -= -right
+					while p:
+						if p.x != s:
+							p.giveleft(left, s)
+							break
+						s = p
+						p = p.parent
+					self.x = 0
 				else:
-					if item.explode(depth + 1):
-						ret = True
-						break
-		return ret
+					self.x += left
+					while p:
+						if p.y != s:
+							p.giveright(right, s)
+							break
+						s = p
+						p = p.parent
+					self.y = 0
+				return True
+		return False
 
 	def get_magnitude(self):
 		if isinstance(self.x, Pair):
@@ -150,30 +162,32 @@ def parse_row(__row: str) -> Pair:
 				curr.append(int(s[i]))
 			i += 1
 		return curr, i
-
 	pair, idx = parse_pair(__row, 1)
-	# print(str(pair))
 	return pair
 
 
 def reduce(nbs: list[Pair]) -> int:
 	did_something = True
+	adds = 0
 	while len(nbs) > 1 or did_something:
-		print(f'nbs={str(nbs[0])}')
+		if adds == 4:
+			print(f'num={str(nbs[0])}')
 		did_something = False
-		if nbs[0].explode(0):
+		if nbs[0].first_explode(0):
 			did_something = True
 			continue
-
-		if nbs[0].split():
+		# print(f'lets explode')
+		if nbs[0].then_split():
 			did_something = True
 			continue
 
 		if len(nbs) > 1:
+			print(f'...={str(nbs[0])}')
 			nbs[0] = nbs[0] + nbs[1]
 			nbs.pop(1)
+			adds += 1
 			did_something = True
-			print(f'ADDED')
+			# print(f'ADDED')
 			continue
 
 	print(f'{nbs[0]}')
@@ -182,7 +196,4 @@ def reduce(nbs: list[Pair]) -> int:
 
 lines = open('input.txt').read().splitlines()
 rows = [parse_row(s) for s in lines]
-# for row in rows:
-# 	print(row)
-# 	row.explode()
 print(f'Part1: {reduce(rows)}')
