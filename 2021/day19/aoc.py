@@ -70,7 +70,7 @@ def find_one_overlap(scan0: int, scan1: int) -> tuple:
 
 def find_positions(known_idx, unknown_idx, b0_idx, b1_idx, overlaps):
 	new_orient = np.ndarray
-	print(f'known_idx={known_idx}, unknown_idx={unknown_idx}, b0_idx={b0_idx}, b1_idx={b1_idx}, overlaps={overlaps}')
+	# print(f'known_idx={known_idx}, unknown_idx={unknown_idx}, b0_idx={b0_idx}, b1_idx={b1_idx}, overlaps={overlaps}')
 	for d in overlaps:
 		if d == 0:
 			# Same distance to itself doesn't help us of course
@@ -80,11 +80,11 @@ def find_positions(known_idx, unknown_idx, b0_idx, b1_idx, overlaps):
 		# Just like how b0_idx and b1_idx represent the same beacon as seen from different scanners,
 		# q1 and q2 represent the same beacon
 		# Because we now have 2 beacon locations, we can find the unknown_scanner's rotation
-		print(f'q0={q0}, q1={q1}')
+		# print(f'q0={q0}, q1={q1}')
 
 		known_diff = scanners[known_idx][b0_idx] - scanners[known_idx][q0]
 		unkown_diff = scanners[unknown_idx][b1_idx] - scanners[unknown_idx][q1]
-		print(f'known_diff={known_diff}, unkown_diff={unkown_diff}')
+		# print(f'known_diff={known_diff}, unkown_diff={unkown_diff}')
 
 		# if len(set(np.abs(diff0))) < 3:
 		# 	print(f'length too smol')
@@ -99,14 +99,14 @@ def find_positions(known_idx, unknown_idx, b0_idx, b1_idx, overlaps):
 				# Gotta line up the axes with known_scanner
 				order.append(idx)
 				sign.append(unkown_diff[idx] // known_diff[i])
-			print(order, sign)
+			# print(order, sign)
 
 			new_orient = scanners[unknown_idx][:, order] * np.array(sign)
 			# print(f'new_orient = {new_orient}')
-			print(f'sign array = {np.array(sign)}')
+			# print(f'sign array = {np.array(sign)}')
 			break
 		except IndexError as e:
-			print(f'Exception {e}')
+			# print(f'Exception {e}')
 			continue
 
 	scanner_pos = scanners[known_idx][b0_idx] - new_orient[b1_idx]
@@ -133,8 +133,10 @@ def find_all_scanners(scanner_positions):
 			# global scanners
 			scanner_positions[unknown_scanner_idx], scanners[unknown_scanner_idx] = find_positions(known_scanner_idx, unknown_scanner_idx, overlaps[0], overlaps[1], overlaps[2])
 			known_scanners.add(unknown_scanner_idx)  # Assumes there aren't 2 scanners that will match with scanner 0
+			# print(f'known_scanners = {known_scanners}')
+			print(f'Nieuwe scanner {unknown_scanner_idx} overlapt met {known_scanner_idx}')
+			# print(f'known_scanner_idx={known_scanner_idx}, unknown_idx={unknown_scanner_idx}')
 			count += 1
-			# exit()
 
 
 def find_all_beacons():
@@ -146,13 +148,8 @@ def find_all_beacons():
 
 def find_furthest_distance(scanner_positions):
 	res = 0
-	for k, v in scanner_positions.items():
-		for k2, v2 in scanner_positions.items():
-			abss = np.abs(v - v2)
-			print(f'abs={abss}')
-			summy = np.sum(np.sum(abss))
-			print(f'sum = {summy}')
-			# res = max(summy, res)
+	for v in scanner_positions.values():
+		for v2 in scanner_positions.values():
 			res = max(res, np.sum(np.abs(v - v2)))
 	return res
 
@@ -161,18 +158,16 @@ def main(filename: str) -> tuple:
 	global scanners, all_distances
 	scanners = parse(filename)
 	all_distances = get_all_dists()
-	scanner_positions = {0: np.array([0, 0, 0])}
+	scanner_positions = {0: np.zeros(shape=(1, 3))}
 	find_all_scanners(scanner_positions)
 	beacons = find_all_beacons()
-	print(f'length of beacons = {len(beacons)}')
 	return len(beacons), find_furthest_distance(scanner_positions)
 
 
 if __name__ == '__main__':
-	with open('output.txt', 'w') as f:
-		example_outcome = main('example.txt')
-		print(f'example_outcome = {example_outcome}')
-		assert example_outcome[0] == 79
-		assert example_outcome[1] == 3621
-		print(f'Part1: {main("input.txt")}')
-		print(f'Part1: {main("input.txt")}')
+	example_outcome = main('example.txt')
+	assert example_outcome[0] == 79
+	assert example_outcome[1] == 3621
+	real_outcome = main('input.txt')
+	print(f'Part1: {real_outcome[0]}')
+	print(f'Part2: {real_outcome[1]}')
