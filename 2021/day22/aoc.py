@@ -54,9 +54,9 @@ class Cube:
 
 	def get_difference(self, other):
 		inter = self.get_intersection(other)
-		print(f'self={self}')
-		print(f'other={other}')
-		print(f'intersection={inter}\n')
+		# print(f'self={self}')
+		# print(f'other={other}')
+		# print(f'intersection={inter}\n')
 		if inter is None:
 			return None
 		subcubes = [
@@ -68,8 +68,8 @@ class Cube:
 			Cube([inter.x, inter.y, (inter.z[1] + 1, self.z[1])], state=self.state)
 		]
 
-		for i, c in enumerate(subcubes):
-			print(f'subcube[{i}]={c}')
+		# for i, c in enumerate(subcubes):
+		# 	print(f'subcube[{i}]={c}')
 		return [c for c in subcubes if c.isvalid()]
 
 	def __repr__(self):
@@ -113,11 +113,15 @@ def part2(cubes: list[Cube]) -> int:
 			if cube.does_overlap(existing_cube):
 				result = cube.get_difference(existing_cube)
 				if result is not None:
-					print(f'diff has len={len(result)}')
 					new_cubes.extend(result)
+				else:
+					raise AssertionError
+			else:
+				new_cubes.append(cube)
 		if existing_cube.state:
 			new_cubes.append(existing_cube)
 		all_cubes = new_cubes
+		print(f'ALL_CUBES IS NOW LENGTH {len(all_cubes)}')
 	return sum([c.getvolume() for c in all_cubes])
 
 
@@ -132,8 +136,10 @@ def main(filename: str) -> tuple:
 
 if __name__ == '__main__':
 	example_outcome = main('example.txt')
-	# assert example_outcome[0] == 474140
+	assert example_outcome[0] == 474140
 	assert example_outcome[1] == 2758514936282235
-	real_outcome = main('input.txt')
+	real_outcome = main('honey.txt')
 	print(f'Part1: {real_outcome[0]}')
 	print(f'Part2: {real_outcome[1]}')
+
+# Not 1227345351869917
