@@ -14,17 +14,6 @@ class Cube:
 		elif isinstance(arg, list):
 			self.x, self.y, self.z = arg
 
-	def __eq__(self, other):
-		return self.x == other.x and self.y == other.y and self.z == other.z
-
-	def __lt__(self, other):
-		for c, c2 in zip([self.x, self.y, self.z], [other.x, other.y, other.z]):
-			if c < c2:
-				return True
-			elif c > c2:
-				return False
-		return False
-
 	def parse(self, row: str):
 		state, coords = row.split(' ')
 		self.state = bool(state == 'on')
@@ -38,14 +27,13 @@ class Cube:
 		for c in [self.x, self.y, self.z]:
 			yield c
 
+	# @functools.lru_cache(maxsize=None)
 	def does_overlap(self, other) -> bool:
 		return self.x[1] >= other.x[0] and self.x[0] < other.x[1] and \
 				self.y[1] >= other.y[0] and self.y[0] < other.y[1] and \
 				self.z[1] >= other.z[0] and self.z[0] < other.z[1]
 
 	def get_intersection(self, other):
-		if not self.does_overlap(other):
-			return None
 		new_cube = [(max(a[0], b[0]), min(a[1], b[1])) for a, b in zip(self, other)]
 		return Cube(new_cube, other.state)
 
@@ -54,18 +42,13 @@ class Cube:
 
 	def get_difference(self, other):
 		inter = self.get_intersection(other)
-		# print(f'self={self}')
-		# print(f'other={other}')
-		# print(f'intersection={inter}\n')
-		if inter is None:
-			return None
 		subcubes = [
-			Cube([self.x, (self.y[0], inter.y[0] - 1), self.z], state=self.state),
-			Cube([self.x, (inter.y[1] + 1, self.y[1]), self.z], state=self.state),
-			Cube([(self.x[0], inter.x[0] - 1), inter.y, self.z], state=self.state),
-			Cube([(inter.x[1] + 1, self.x[1]), inter.y, self.z], state=self.state),
-			Cube([inter.x, inter.y, (self.z[0], inter.z[0] - 1)], state=self.state),
-			Cube([inter.x, inter.y, (inter.z[1] + 1, self.z[1])], state=self.state)
+			Cube([self.x, (self.y[0], inter.y[0] - 1), self.z], state=True),
+			Cube([self.x, (inter.y[1] + 1, self.y[1]), self.z], state=True),
+			Cube([(self.x[0], inter.x[0] - 1), inter.y, self.z], state=True),
+			Cube([(inter.x[1] + 1, self.x[1]), inter.y, self.z], state=True),
+			Cube([inter.x, inter.y, (self.z[0], inter.z[0] - 1)], state=True),
+			Cube([inter.x, inter.y, (inter.z[1] + 1, self.z[1])], state=True)
 		]
 
 		# for i, c in enumerate(subcubes):
@@ -73,15 +56,15 @@ class Cube:
 		return [c for c in subcubes if c.isvalid()]
 
 	def __repr__(self):
-		return f'Cube: {self.x}, {self.y}, {self.z} <= {self.state}, volume = {self.getvolume()}'
+		return f'Cube: {self.x}, {self.y}, {self.z} <= {self.state}'
 
 	def values(self):
 		return [self.x[0], self.x[1], self.y[0], self.y[1], self.z[0], self.z[1]]
 
 	def getvolume(self):
-		# if not self.isvalid():
-		# 	return -1
-		return abs(self.x[1] - self.x[0] + 1) * abs(self.y[1] - self.y[0] + 1) * abs(self.z[1] - self.z[0] + 1)
+		if not self.isvalid():
+			raise IndexError
+		return math.prod([c[1] - c[0] + 1 for c in self.__iter__()])
 
 
 def parse(filename: str):
@@ -107,28 +90,31 @@ def part1(cubes: list[Cube]):
 
 def part2(cubes: list[Cube]) -> int:
 	all_cubes = []
-	for existing_cube in cubes:
+	for kkkubus in cubes:
+		# print(f'kanker kubus = {kkkubus}')
 		new_cubes = []
 		for cube in all_cubes:
-			if cube.does_overlap(existing_cube):
-				result = cube.get_difference(existing_cube)
+			if cube.does_overlap(kkkubus):
+				result = cube.get_difference(kkkubus)
 				if result is not None:
 					new_cubes.extend(result)
 				else:
 					raise AssertionError
-			else:
+			elif cube.state:
 				new_cubes.append(cube)
-		if existing_cube.state:
-			new_cubes.append(existing_cube)
+		if kkkubus.state:
+			new_cubes.append(kkkubus)
 		all_cubes = new_cubes
-		print(f'ALL_CUBES IS NOW LENGTH {len(all_cubes)}')
+		print(f'total ON volume now is {sum([c.getvolume() for c in all_cubes])}')
+		# print(f'ALL_CUBES IS NOW LENGTH {len(all_cubes)}')
+	print(len(all_cubes))
 	return sum([c.getvolume() for c in all_cubes])
 
 
 def main(filename: str) -> tuple:
 	rows = parse(filename)
 	on_beacons = part1(rows)
-	print(f'on_beacons={on_beacons}')
+	# print(f'on_beacons={on_beacons}')
 	ans = part2(rows)
 	print(f'ans={ans}')
 	return on_beacons, ans
