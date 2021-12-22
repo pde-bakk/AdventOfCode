@@ -40,27 +40,39 @@ class Cube:
 		if not self.does_overlap(other):
 			return None
 		new_cube = [(max(a[0], b[0]), min(a[1], b[1])) for a, b in zip(self, other)]
-		print(f'new_cube = {new_cube}')
+		# print(f'new_cube = {new_cube}')
 		intersection = Cube(new_cube, other.onoff)
+		return intersection
+
+	def isvalid(self) -> bool:
+		return self.getvolume() > 0 and self.x[1] >= self.x[0] and self.y[1] >= self.y[0] and self.z[1] >= self.z[0]
+
+	def get_difference(self, other):
+		inter = self.get_intersection(other)
+		if inter is None:
+			return None
+		subcubes = []
+		subcubes.append(Cube([self.x, (self.y[0], inter.y[0]), self.z], onoff=self.onoff))
+		subcubes.append(Cube([self.x, (inter.y[1], self.y[1]), self.z], onoff=self.onoff))
+		subcubes.append(Cube([(self.x[0], inter.x[0]), inter.y, self.z], onoff=self.onoff))
+		subcubes.append(Cube([(inter.x[1], self.x[1]), inter.y, self.z], onoff=self.onoff))
+		subcubes.append(Cube([inter.x, inter.y, (self.z[0], inter.z[0])], onoff=self.onoff))
+		subcubes.append(Cube([inter.x, inter.y, (inter.z[1], self.z[1])], onoff=self.onoff))
+		return [c for c in subcubes if c.isvalid()]
+
+	def __repr__(self):
+		return f'Cube: {self.x}, {self.y}, {self.z} <= {self.onoff}, volume={self.getvolume()}'
 
 	def values(self):
 		return [self.x[0], self.x[1], self.y[0], self.y[1], self.z[0], self.z[1]]
 
 	def getvolume(self):
-		return abs(self.x[1] - self.x[0]) * abs(self.y[1] - self.y[0]) - abs(self.z[1] - self.z[0])
+		return abs(self.x[1] - self.x[0] + 1) * abs(self.y[1] - self.y[0] + 1) * abs(self.z[1] - self.z[0] + 1)
 
 	def does_overlap(self, other) -> bool:
 		return self.x[1] > other.x[0] and self.x[0] < other.x[1] and \
 				self.y[1] > other.y[0] and self.y[0] < other.y[1] and \
 				self.z[1] > other.z[0] and self.z[0] < other.z[1]
-
-	# def overlap(self, other):
-	# 	if self.x[1] > other.x[0] and self.x[0] < other.x[1] and \
-	# 			self.y[1] > other.y[0] and self.y[0] < other.y[1] and \
-	# 			self.z[1] > other.z[0] and self.z[0] < other.z[1]:
-	# 		return T
-	# 		pass
-	# 	raise ArithmeticError
 
 
 def parse(filename: str):
@@ -88,21 +100,26 @@ def part2(lines: list[Cube]) -> int:
 	all_cubes = []
 	for line in lines:
 		new_cubes = []
+		print(f'line={line}')
 		for cube in all_cubes:
 			if cube.does_overlap(line):
-				overlap = cube.get_intersection()
+				result = cube.get_difference(line)
+				if result is not None:
+					new_cubes.extend(result)
+		if line.onoff == 'on':
+			new_cubes.append(line)
 		all_cubes.extend(new_cubes)
 		new_cubes.clear()
-		pass
-	return 0
+	return sum([c.getvolume() for c in all_cubes])
 
 
 def main(filename: str) -> tuple:
 	rows = parse(filename)
 	on_beacons = part1(rows)
 	print(f'on_beacons={on_beacons}')
-	part2(rows)
-	return on_beacons, 0
+	ans = part2(rows)
+	print(f'ans={ans}')
+	return on_beacons, ans
 
 
 if __name__ == '__main__':
