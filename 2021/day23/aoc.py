@@ -21,6 +21,7 @@ class Node:
 	goal_c = ((2, 7), (3, 7))
 	goal_d = ((2, 9), (3, 9))
 	goals = [goal_a, goal_b, goal_c, goal_d]
+	doors = ((1, 3), (1, 5), (1, 7), (1, 9))
 
 	def __init__(self, arg=None):
 		if arg is None:
@@ -132,13 +133,36 @@ class Node:
 			return False
 		return True
 
+	def get_possible_moves(self, curr_pos):
+		moves = set()
+		seen = set()
+
+		def getneighbours(pos):
+			neighs = set()
+			for n in get_neighbours():
+				new_pos = tuple(map(operator.add, pos, n))
+				seen.add(new_pos)
+				y, x = new_pos
+				if -1 in new_pos or Node.grid[y][x] == '#' or any(new_pos in x for x in self.__iter__()):
+					continue
+				if new_pos in seen:
+					continue
+				neighs.update(getneighbours(new_pos))
+			return neighs
+		moves.update(getneighbours(curr_pos))
+		return moves
+
 	def perform_moves(self, closed_queue: dict = None):
 		for i, amphipods in enumerate(self.__iter__()):
 			for amphi_idx, amphi in enumerate(amphipods):
-				for n in get_neighbours():
+				possiblemoves = self.get_possible_moves(amphi)
+				if len(possiblemoves) == 0:
+					continue
+				print(f'amphi={amphi}')
+				print(f'possiblemoves:\n{possiblemoves}')
+				exit()
+				for n in self.get_possible_moves(amphi):
 					ay, ax = amphi
-					# print(f'{amphi} in {Node.goals[i]}i={i}: {amphi in Node.goals[i]}')
-					# print(f'tile below is Node.grid[{ay + 1}][{ax}] = {Node.grid[ay-1][ax]}')
 					if amphi in Node.goals[i] and (Node.grid[ay + 1][ax] == '#' or amphipods[amphi_idx - 1] == (amphi[0] + 1, amphi[1])):
 						continue
 					target_pos = tuple(map(operator.add, amphi, n))
@@ -148,17 +172,22 @@ class Node:
 						continue  # Blocked by a wall
 					if any(target_pos in x for x in self.__iter__()):
 						continue  # Blocked by another amphipod
+					if target_pos in Node.doors:
+						continue  # Amphipods will never stop on the space immediately outside any room.
+					if amphi[0] != 3 and target_pos[0] >= 2 and target_pos[1] != Node.goals[i][0][1]:
+						continue  # Moving down into a hallway that isn't its goal position
 					new_node = Node(self)
 					listy = new_node[i]
 					listy[amphi_idx] = target_pos
 					new_node.g += 1
 					new_node.energy += 10 ** i
 					new_node.heuristic()
-					# if new_node.gethash() not in closed_queue.keys():
-					# 	# print(f'i, amphipods = {i}, {amphipods}')
-					# 	# print(f'amphi_idx, amphi = {amphi_idx}, {amphi}')
-					# 	# print(f'n, target_pos = {n}, {target_pos}')
-					# 	print(f'new_node = \n{new_node}')
+					if closed_queue is None or new_node.gethash() not in closed_queue.keys():
+						# print(f'i, amphipods = {i}, {amphipods}')
+						# print(f'amphi_idx, amphi = {amphi_idx}, {amphi}')
+						# print(f'n, target_pos = {n}, {target_pos}')
+						print(f'new_node = \n{new_node}')
+						pass
 					yield new_node
 
 
@@ -182,9 +211,7 @@ def pathfind(start: Node) -> int:
 			heapq.heappush(open_queue, move)
 		hashy = node.gethash()
 		if hashy not in closed_queue.keys() or closed_queue[hashy] > node.g:
-			# print(f'adding node to closed_queue')
 			closed_queue[node.gethash()] = node.g
-		# print(f'len open_queue is {len(open_queue)}')
 		if i == 3:
 			break
 		# i += 1
@@ -194,10 +221,9 @@ def pathfind(start: Node) -> int:
 
 
 def bfs(start: Node) -> int:
-	print(f'LETS START PATHFINDING')
+	print(f'LETS START BFS')
 	open_queue = deque()
 	open_queue.append(start)
-	i = 0
 	while len(open_queue) > 0:
 		node = open_queue.popleft()
 		# print(f'POPPING node:\n{node}')
@@ -206,21 +232,8 @@ def bfs(start: Node) -> int:
 			print(node)
 			return node.g
 		for move in node.perform_moves():
-			# hashy = move.gethash()
-			# if hashy in closed_queue.keys() and closed_queue[hashy] <= move.g:
-			# 	continue
 			open_queue.append(move)
-			# heapq.heappush(open_queue, move)
-		# hashy = node.gethash()
-		# if hashy not in closed_queue.keys() or closed_queue[hashy] > node.g:
-		# 	# print(f'adding node to closed_queue')
-		# 	closed_queue[node.gethash()] = node.g
-		# print(f'len open_queue is {len(open_queue)}')
-		if i == 3:
-			break
-		# i += 1
 	print(f'open_queue still has a length of {len(open_queue)}')
-	# print(f'closed queue has {len(closed_queue)} items in it')
 	return 0
 
 
@@ -235,8 +248,8 @@ def parse(fstr: str) -> Node:
 def main(fstr: str):
 	start = parse(fstr)
 	print(start)
-	# ans = pathfind(start)
-	ans = bfs(start)
+	ans = pathfind(start)
+	# ans = bfs(start)
 	print(f'ans={ans}')
 	return ans
 
