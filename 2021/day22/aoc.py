@@ -29,19 +29,20 @@ class Cube:
 
 	# @functools.lru_cache(maxsize=None)
 	def does_overlap(self, other) -> bool:
-		return self.x[1] >= other.x[0] and self.x[0] < other.x[1] and \
-				self.y[1] >= other.y[0] and self.y[0] < other.y[1] and \
-				self.z[1] >= other.z[0] and self.z[0] < other.z[1]
+		return all(a[0] <= b[1] and a[1] >= b[0] for a, b in zip(self, other))
 
 	def get_intersection(self, other):
+		assert self.does_overlap(other)
+
 		new_cube = [(max(a[0], b[0]), min(a[1], b[1])) for a, b in zip(self, other)]
 		return Cube(new_cube, other.state)
 
 	def isvalid(self) -> bool:
-		return self.x[1] >= self.x[0] and self.y[1] >= self.y[0] and self.z[1] >= self.z[0]
+		return all(c[1] >= c[0] for c in self.__iter__())
 
 	def get_difference(self, other):
 		inter = self.get_intersection(other)
+		assert inter is not None
 		subcubes = [
 			Cube([self.x, (self.y[0], inter.y[0] - 1), self.z], state=True),
 			Cube([self.x, (inter.y[1] + 1, self.y[1]), self.z], state=True),
@@ -50,9 +51,6 @@ class Cube:
 			Cube([inter.x, inter.y, (self.z[0], inter.z[0] - 1)], state=True),
 			Cube([inter.x, inter.y, (inter.z[1] + 1, self.z[1])], state=True)
 		]
-
-		# for i, c in enumerate(subcubes):
-		# 	print(f'subcube[{i}]={c}')
 		return [c for c in subcubes if c.isvalid()]
 
 	def __repr__(self):
@@ -91,22 +89,15 @@ def part1(cubes: list[Cube]):
 def part2(cubes: list[Cube]) -> int:
 	all_cubes = []
 	for kkkubus in cubes:
-		# print(f'kanker kubus = {kkkubus}')
 		new_cubes = []
 		for cube in all_cubes:
 			if cube.does_overlap(kkkubus):
-				result = cube.get_difference(kkkubus)
-				if result is not None:
-					new_cubes.extend(result)
-				else:
-					raise AssertionError
-			elif cube.state:
+				new_cubes.extend(cube.get_difference(kkkubus))
+			else:
 				new_cubes.append(cube)
 		if kkkubus.state:
 			new_cubes.append(kkkubus)
 		all_cubes = new_cubes
-		print(f'total ON volume now is {sum([c.getvolume() for c in all_cubes])}')
-		# print(f'ALL_CUBES IS NOW LENGTH {len(all_cubes)}')
 	print(len(all_cubes))
 	return sum([c.getvolume() for c in all_cubes])
 
@@ -124,7 +115,7 @@ if __name__ == '__main__':
 	example_outcome = main('example.txt')
 	assert example_outcome[0] == 474140
 	assert example_outcome[1] == 2758514936282235
-	real_outcome = main('honey.txt')
+	real_outcome = main('input.txt')
 	print(f'Part1: {real_outcome[0]}')
 	print(f'Part2: {real_outcome[1]}')
 
