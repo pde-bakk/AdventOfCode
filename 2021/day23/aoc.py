@@ -65,15 +65,7 @@ class Node:
 
 	def heuristic(self):
 		self.h = 0
-		# print(self)
 		for i, (positions, goals) in enumerate(self.get_amphipods()):
-			# for pos in positions:
-			# 	# print(f'pos={pos}, goals={goals}')
-			# 	dist1 = Node.calc_distance(pos, goals[0])
-			# 	dist2 = Node.calc_distance(pos, goals[1])
-			# 	minimum = min(dist1, dist2)
-			# 	# print(f'dist1={dist1}, dist2={dist2}, min={minimum}')
-			# 	self.h += minimum
 			for pos, goalpos in zip(sorted(list(positions)), sorted(list(goals))):
 				self.h += Node.calc_distance(pos, goalpos) * (10 ** i)
 		return self.h
@@ -143,25 +135,16 @@ class Node:
 			for move in moves:
 				y, x = move
 				if y >= 2:
-					# print(f'checking if {curr_pos} can move to {move}')
 					if move not in Node.goals[amphi_type]:
-						# print(f'cant cus not goal')
 						continue  # Amphipods will never move from the hallway into a room unless that room is their destination room
 					if y == 2:
-						# print(f'other of same type @{self[amphi_type][amphi_idx-1]} ?== {y+1, x}')
 						if self[amphi_type][amphi_idx - 1] != (y + 1, x):
-							# print(f'Cant cus other st')
 							continue  # and that room contains no amphipods which do not also have that room as their own destination.
-					# print(f'AND HE CAN! POG')
 				if move in Node.doors:
 					continue  # Amphipods will never stop on the space immediately outside any room.
 				if curr_pos[0] == 1 and y == 1:
 					continue  # Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room.
-				# if curr_pos == (2, 9) and move == (1, 8):
-				# 	print(f'actually does the move')
 				pruned.add(move)
-			# if pruned:
-			# 	print(f'{curr_pos} can move to {sorted(list(pruned))}')
 			return pruned
 
 		def getneighbours(pos):
@@ -204,7 +187,6 @@ class Node:
 					if amphi in Node.goals[amphi_type] and (Node.grid[ay + 1][ax] == '#' or amphipods[amphi_idx - 1] == (amphi[0] + 1, amphi[1])):
 						# Amphipod is already in goal position, don't move
 						continue
-					# target_pos = tuple(map(operator.add, amphi, n))
 					new_node = Node(self)
 					listy = new_node[amphi_type]
 					listy[amphi_idx] = target_pos
@@ -217,14 +199,10 @@ def pathfind(start: Node) -> Node:
 	print(f'LETS START PATHFINDING')
 	closed_queue = {}
 	open_queue = []
-	mini = float('inf')
 	heapq.heappush(open_queue, start)
 	while len(open_queue) > 0:
 		node = heapq.heappop(open_queue)
 		if node.h == 0:
-			# mini = min(mini, node.g)
-			# print(f'mini={mini}')
-			# continue
 			return node
 		nodehash = node.gethash()
 		if nodehash in closed_queue.keys() and node.h > closed_queue[nodehash]:
@@ -237,8 +215,6 @@ def pathfind(start: Node) -> Node:
 		nodehash = node.gethash()
 		if nodehash not in closed_queue.keys() or closed_queue[nodehash] > node.h:
 			closed_queue[node.gethash()] = node.h
-	print(f'open_queue still has a length of {len(open_queue)}')
-	print(f'closed queue has {len(closed_queue)} items in it')
 	return None
 
 
@@ -264,5 +240,5 @@ def main(fstr: str):
 
 
 if __name__ == '__main__':
-	# assert main('example.txt') == 12521
+	assert main('example.txt') == 12521
 	print(f'Part1: {main("input.txt")}')
