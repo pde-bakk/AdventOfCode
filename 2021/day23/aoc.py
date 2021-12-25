@@ -181,20 +181,18 @@ class Node:
 		return prune()
 
 	@staticmethod
+	def manh(pos: tuple, target: tuple) -> int:
+		manh_dist = tuple(map(abs, tuple(map(operator.sub, target, pos))))
+		return sum(manh_dist)
+
+	@staticmethod
 	def calc_distance(pos: tuple, target: tuple) -> int:
 		manh_dist = tuple(map(abs, tuple(map(operator.sub, target, pos))))
 		total_dist = sum(manh_dist)
 		if pos[0] >= 2 and target[0] >= 2 and pos[1] != target[1]:  # Gotta walk around the wall
-			# if pos[0] == target[0]:
-			# 	total_dist += 2
-			# 	if pos[0] == 3:
-			# 		total_dist += 2
-			# else:
-			# 	total_dist += 2
-
-			bonus_points = 2 + int(pos[0] == 3) + int(target[0] == 3)
-			print(f'{pos}=>{target}: {total_dist} + {bonus_points}')
-			total_dist += bonus_points
+			total_dist += 2
+			if pos[0] == 3 and target[0] == 3:
+				total_dist += 2
 		return total_dist
 
 	def perform_moves(self):
