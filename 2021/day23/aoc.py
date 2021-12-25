@@ -15,11 +15,9 @@ def get_neighbours():
 
 class Node:
 	grid = []
-	#          y, x ,  y, x
-	goal_a = ((2, 3), (3, 3))
-	goal_b = ((2, 5), (3, 5))
-	goal_c = ((2, 7), (3, 7))
-	goal_d = ((2, 9), (3, 9))
+	GOAL_Y = [2, 3]
+	goal_ax, goal_bx, goal_cx, goal_dx = 3, 5, 7, 9
+	goal_a, goal_b, goal_c, goal_d = (), (), (), ()
 	goals = [goal_a, goal_b, goal_c, goal_d]
 	doors = ((1, 3), (1, 5), (1, 7), (1, 9))
 
@@ -44,6 +42,18 @@ class Node:
 		self.tiebreaker = tiebreaker
 		tiebreaker += 1
 
+	@staticmethod
+	def setgoals(part: int = 1):
+		if part == 2:
+			Node.GOAL_Y.extend([4, 5])
+		Node.goal_a = tuple([(y, Node.goal_ax) for y in Node.GOAL_Y])
+		Node.goal_b = tuple([(y, Node.goal_bx) for y in Node.GOAL_Y])
+		Node.goal_c = tuple([(y, Node.goal_cx) for y in Node.GOAL_Y])
+		Node.goal_d = tuple([(y, Node.goal_dx) for y in Node.GOAL_Y])
+		Node.goals = [Node.goal_a, Node.goal_b, Node.goal_c, Node.goal_d]
+		print(f'part={part}')
+		print(f'Node.goals = {Node.goals}')
+
 	def gethash(self):
 		return tuple(sorted(self.a)) + tuple(sorted(self.b)) + tuple(sorted(self.c)) + tuple(sorted(self.d))
 
@@ -60,7 +70,7 @@ class Node:
 		return [self.a, self.b, self.c, self.d][item]
 
 	def get_amphipods(self):
-		for pos, goal in zip(self.__iter__(), [Node.goal_a, Node.goal_b, Node.goal_c, Node.goal_d]):
+		for pos, goal in zip(self.__iter__(), Node.goals):
 			yield pos, goal
 
 	def heuristic(self):
@@ -112,21 +122,21 @@ class Node:
 		s += f'Heuristic: {self.h}\n'
 		return s
 
-	def move_is_possible(self, movetile) -> bool:
-		if any(c == -1 for c in movetile):
-			return False
-		my, mx = movetile
-		if Node.grid[my][mx] == '#':
-			return False
-		if any(movetile in x for x in [self.a, self.b, self.c, self.d]):
-			return False
-		return True
+	def has_strays(self, pos, amphi_type) -> bool:
+		y, x = pos
+		other_types = [0, 1, 2, 3]
+		other_types.remove(amphi_type)
+		for cy in range(Node.GOAL_Y[-1], y, -1):
+			for other_type in other_types:
+				if (cy, x) in self[other_type]:
+					return True
+		return False
 
-	def get_possible_moves(self, curr_pos, amphi_type, amphi_idx):
+	def get_possible_moves(self, curr_pos, amphi_type):
 		moves = set()
 		seen = set()
 
-		if curr_pos in Node.goals[amphi_type] and (curr_pos[0] == 3 or self[amphi_type][amphi_idx - 1] == (curr_pos[0] + 1, curr_pos[1])):
+		if curr_pos in Node.goals[amphi_type] and not self.has_strays(curr_pos, amphi_type):
 			# Amphipod is already done, why move?
 			return moves
 
@@ -134,17 +144,15 @@ class Node:
 			pruned = set()
 			for move in moves:
 				y, x = move
-				if y >= 2:
-					if move not in Node.goals[amphi_type]:
-						continue  # Amphipods will never move from the hallway into a room unless that room is their destination room
-					if y == 2:
-						if self[amphi_type][amphi_idx - 1] != (y + 1, x):
-							continue  # and that room contains no amphipods which do not also have that room as their own destination.
-				if move in Node.doors:
-					continue  # Amphipods will never stop on the space immediately outside any room.
-				if curr_pos[0] == 1 and y == 1:
-					continue  # Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room.
-				pruned.add(move)
+				try:
+					if y >= 2:
+						assert move in Node.goals[amphi_type]  # Amphipods will never move from the hallway into a room unless that room is their destination room
+						assert not self.has_strays(move, amphi_type)  # And that room contains no amphipods which do not also have that room as their own destination.
+					assert move not in Node.doors  # Amphipods will never stop on the space immediately outside any room.
+					assert not (curr_pos[0] == 1 and y == 1)  # Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room.
+					pruned.add(move)
+				except AssertionError:
+					continue
 			return pruned
 
 		def getneighbours(pos):
@@ -154,7 +162,7 @@ class Node:
 				if new_pos in seen:
 					continue
 				y, x = new_pos
-				if -1 in new_pos or Node.grid[y][x] == '#' or any(new_pos in x for x in self.__iter__()):
+				if -1 in new_pos or Node.grid[y][x] == '#' or any(new_pos in pods for pods in self.__iter__()):
 					continue
 				seen.add(new_pos)
 				neighs.add(new_pos)
@@ -164,24 +172,19 @@ class Node:
 		return prune()
 
 	@staticmethod
-	def manh(pos: tuple, target: tuple) -> int:
-		manh_dist = tuple(map(abs, tuple(map(operator.sub, target, pos))))
-		return sum(manh_dist)
-
-	@staticmethod
 	def calc_distance(pos: tuple, target: tuple) -> int:
 		manh_dist = tuple(map(abs, tuple(map(operator.sub, target, pos))))
-		total_dist = sum(manh_dist)
 		if pos[0] >= 2 and target[0] >= 2 and pos[1] != target[1]:  # Gotta walk around the wall
-			total_dist += 2
-			if pos[0] == 3 and target[0] == 3:
-				total_dist += 2
-		return total_dist
+			_, xdist = manh_dist
+			ydist1 = pos[0] - 1
+			ydist2 = target[0] - 1
+			return xdist + ydist1 + ydist2
+		return sum(manh_dist)
 
 	def perform_moves(self):
 		for amphi_type, amphipods in enumerate(self.__iter__()):
 			for amphi_idx, amphi in enumerate(amphipods):
-				possiblemoves = self.get_possible_moves(amphi, amphi_type, amphi_idx)
+				possiblemoves = self.get_possible_moves(amphi, amphi_type)
 				for target_pos in possiblemoves:
 					ay, ax = amphi
 					if amphi in Node.goals[amphi_type] and (Node.grid[ay + 1][ax] == '#' or amphipods[amphi_idx - 1] == (amphi[0] + 1, amphi[1])):
@@ -202,6 +205,7 @@ def pathfind(start: Node) -> Node:
 	heapq.heappush(open_queue, start)
 	while len(open_queue) > 0:
 		node = heapq.heappop(open_queue)
+		# print(f'Popping:\n{node}')
 		if node.h == 0:
 			return node
 		nodehash = node.gethash()
@@ -224,16 +228,22 @@ def print_history(node: Node) -> None:
 	print(node)
 
 
-def parse(fstr: str) -> Node:
+def parse(fstr: str, part: int = 1) -> Node:
 	with open(fstr, 'r') as f:
 		rows = f.read().splitlines()
 		grid = [[c for c in r] for r in rows]
+	if part == 2:
+		grid.insert(3, [c for c in '  #D#C#B#A#'])
+		grid.insert(4, [c for c in '  #D#B#A#C#'])
+	Node.setgoals(part=part)
 	Node.grid = copy.deepcopy(grid)
+	for row in Node.grid:
+		print(f'{row}')
 	return Node.replace_amphipods()
 
 
-def main(fstr: str):
-	start = parse(fstr)
+def main(fstr: str, part: int = 1):
+	start = parse(fstr, part)
 	ans = pathfind(start)
 	print_history(ans)
 	return ans.g
@@ -242,3 +252,5 @@ def main(fstr: str):
 if __name__ == '__main__':
 	assert main('example.txt') == 12521
 	print(f'Part1: {main("input.txt")}')
+	assert main('example.txt', part=2) == 44169
+	print(f'Part2: {main("input.txt", part=2)}')
