@@ -3,9 +3,9 @@ import heapq
 import operator
 import math
 from collections import deque
+import time
 
 tiebreaker = 0
-best = math.inf
 
 
 def get_neighbours():
@@ -31,7 +31,7 @@ class Node:
 			self.d = []
 			self.g = 0
 			self.h = 0
-			self.energy = 0
+			self.parent = None
 		elif isinstance(arg, Node):
 			self.a = arg.a.copy()
 			self.b = arg.b.copy()
@@ -39,7 +39,7 @@ class Node:
 			self.d = arg.d.copy()
 			self.g = arg.g
 			self.h = arg.h
-			self.energy = arg.energy
+			self.parent = arg
 		global tiebreaker
 		self.tiebreaker = tiebreaker
 		tiebreaker += 1
@@ -48,15 +48,7 @@ class Node:
 		return tuple(sorted(self.a)) + tuple(sorted(self.b)) + tuple(sorted(self.c)) + tuple(sorted(self.d))
 
 	def __lt__(self, other):
-		selff = self.f()
-		otherf = other.f()
-		if selff != otherf:
-			return selff < otherf
-		if self.h != other.h:
-			return self.h < other.h
-		if self.g != other.g:
-			return self.g < other.g
-		return self.tiebreaker < other.tiebreaker
+		return (self.f(), self.h, self.g, self.tiebreaker) < (other.f(), other.h, other.g, other.tiebreaker)
 
 	def __iter__(self):
 		for amphipod in [self.a, self.b, self.c, self.d]:
@@ -73,12 +65,17 @@ class Node:
 
 	def heuristic(self):
 		self.h = 0
-		for pos, goal in self.get_amphipods():
-			first = tuple(map(operator.sub, pos[0], goal[0]))
-			second = tuple(map(operator.sub, pos[1], goal[1]))
-			dist = abs(first[0]) + abs(first[1]) + abs(second[0]) + abs(second[1])
-			# print(f'dist={dist}')
-			self.h += dist
+		# print(self)
+		for i, (positions, goals) in enumerate(self.get_amphipods()):
+			# for pos in positions:
+			# 	# print(f'pos={pos}, goals={goals}')
+			# 	dist1 = Node.calc_distance(pos, goals[0])
+			# 	dist2 = Node.calc_distance(pos, goals[1])
+			# 	minimum = min(dist1, dist2)
+			# 	# print(f'dist1={dist1}, dist2={dist2}, min={minimum}')
+			# 	self.h += minimum
+			for pos, goalpos in zip(sorted(list(positions)), sorted(list(goals))):
+				self.h += Node.calc_distance(pos, goalpos) * (10 ** i)
 		return self.h
 
 	def f(self) -> int:
@@ -99,7 +96,7 @@ class Node:
 							start.c.append((y, x))
 						case 'D':
 							start.d.append((y, x))
-					Node.grid[y][x] = ' '
+					Node.grid[y][x] = '.'
 		start.heuristic()
 		return start
 
@@ -119,7 +116,7 @@ class Node:
 					s += item
 			s += '\n'
 		s += f'F={self.g + self.h}\n'
-		s += f'Energycost: {self.g}\n'
+		s += f'Cost: {self.g}\n'
 		s += f'Heuristic: {self.h}\n'
 		return s
 
@@ -133,108 +130,124 @@ class Node:
 			return False
 		return True
 
-	def get_possible_moves(self, curr_pos):
+	def get_possible_moves(self, curr_pos, amphi_type, amphi_idx):
 		moves = set()
 		seen = set()
+
+		if curr_pos in Node.goals[amphi_type] and (curr_pos[0] == 3 or self[amphi_type][amphi_idx - 1] == (curr_pos[0] + 1, curr_pos[1])):
+			# Amphipod is already done, why move?
+			return moves
+
+		def prune():
+			pruned = set()
+			for move in moves:
+				y, x = move
+				if y >= 2:
+					# print(f'checking if {curr_pos} can move to {move}')
+					if move not in Node.goals[amphi_type]:
+						# print(f'cant cus not goal')
+						continue  # Amphipods will never move from the hallway into a room unless that room is their destination room
+					if y == 2:
+						# print(f'other of same type @{self[amphi_type][amphi_idx-1]} ?== {y+1, x}')
+						if self[amphi_type][amphi_idx - 1] != (y + 1, x):
+							# print(f'Cant cus other st')
+							continue  # and that room contains no amphipods which do not also have that room as their own destination.
+					# print(f'AND HE CAN! POG')
+				if move in Node.doors:
+					continue  # Amphipods will never stop on the space immediately outside any room.
+				if curr_pos[0] == 1 and y == 1:
+					continue  # Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room.
+				# if curr_pos == (2, 9) and move == (1, 8):
+				# 	print(f'actually does the move')
+				pruned.add(move)
+			# if pruned:
+			# 	print(f'{curr_pos} can move to {sorted(list(pruned))}')
+			return pruned
 
 		def getneighbours(pos):
 			neighs = set()
 			for n in get_neighbours():
 				new_pos = tuple(map(operator.add, pos, n))
-				seen.add(new_pos)
+				if new_pos in seen:
+					continue
 				y, x = new_pos
 				if -1 in new_pos or Node.grid[y][x] == '#' or any(new_pos in x for x in self.__iter__()):
 					continue
-				if new_pos in seen:
-					continue
+				seen.add(new_pos)
+				neighs.add(new_pos)
 				neighs.update(getneighbours(new_pos))
 			return neighs
 		moves.update(getneighbours(curr_pos))
-		return moves
+		return prune()
 
-	def perform_moves(self, closed_queue: dict = None):
-		for i, amphipods in enumerate(self.__iter__()):
+	@staticmethod
+	def calc_distance(pos: tuple, target: tuple) -> int:
+		manh_dist = tuple(map(abs, tuple(map(operator.sub, target, pos))))
+		total_dist = sum(manh_dist)
+		if pos[0] >= 2 and target[0] >= 2 and pos[1] != target[1]:  # Gotta walk around the wall
+			# if pos[0] == target[0]:
+			# 	total_dist += 2
+			# 	if pos[0] == 3:
+			# 		total_dist += 2
+			# else:
+			# 	total_dist += 2
+
+			bonus_points = 2 + int(pos[0] == 3) + int(target[0] == 3)
+			print(f'{pos}=>{target}: {total_dist} + {bonus_points}')
+			total_dist += bonus_points
+		return total_dist
+
+	def perform_moves(self):
+		for amphi_type, amphipods in enumerate(self.__iter__()):
 			for amphi_idx, amphi in enumerate(amphipods):
-				possiblemoves = self.get_possible_moves(amphi)
-				if len(possiblemoves) == 0:
-					continue
-				print(f'amphi={amphi}')
-				print(f'possiblemoves:\n{possiblemoves}')
-				exit()
-				for n in self.get_possible_moves(amphi):
+				possiblemoves = self.get_possible_moves(amphi, amphi_type, amphi_idx)
+				for target_pos in possiblemoves:
 					ay, ax = amphi
-					if amphi in Node.goals[i] and (Node.grid[ay + 1][ax] == '#' or amphipods[amphi_idx - 1] == (amphi[0] + 1, amphi[1])):
+					if amphi in Node.goals[amphi_type] and (Node.grid[ay + 1][ax] == '#' or amphipods[amphi_idx - 1] == (amphi[0] + 1, amphi[1])):
+						# Amphipod is already in goal position, don't move
 						continue
-					target_pos = tuple(map(operator.add, amphi, n))
-					if -1 in target_pos:
-						raise IndexError  # Shouldn't happen
-					if Node.grid[target_pos[0]][target_pos[1]] == '#':
-						continue  # Blocked by a wall
-					if any(target_pos in x for x in self.__iter__()):
-						continue  # Blocked by another amphipod
-					if target_pos in Node.doors:
-						continue  # Amphipods will never stop on the space immediately outside any room.
-					if amphi[0] != 3 and target_pos[0] >= 2 and target_pos[1] != Node.goals[i][0][1]:
-						continue  # Moving down into a hallway that isn't its goal position
+					# target_pos = tuple(map(operator.add, amphi, n))
 					new_node = Node(self)
-					listy = new_node[i]
+					listy = new_node[amphi_type]
 					listy[amphi_idx] = target_pos
-					new_node.g += 1
-					new_node.energy += 10 ** i
+					new_node.g += (10 ** amphi_type) * Node.calc_distance(amphi, target_pos)
 					new_node.heuristic()
-					if closed_queue is None or new_node.gethash() not in closed_queue.keys():
-						# print(f'i, amphipods = {i}, {amphipods}')
-						# print(f'amphi_idx, amphi = {amphi_idx}, {amphi}')
-						# print(f'n, target_pos = {n}, {target_pos}')
-						print(f'new_node = \n{new_node}')
-						pass
 					yield new_node
 
 
-def pathfind(start: Node) -> int:
+def pathfind(start: Node) -> Node:
 	print(f'LETS START PATHFINDING')
 	closed_queue = {}
 	open_queue = []
+	mini = float('inf')
 	heapq.heappush(open_queue, start)
-	i = 0
 	while len(open_queue) > 0:
 		node = heapq.heappop(open_queue)
-		print(f'POPPING node:\n{node}')
-		if node.h < 1:
-			print(f'h={node.h}')
-			print(node)
-			return node.g
-		for move in node.perform_moves(closed_queue):
+		if node.h == 0:
+			# mini = min(mini, node.g)
+			# print(f'mini={mini}')
+			# continue
+			return node
+		nodehash = node.gethash()
+		if nodehash in closed_queue.keys() and node.h > closed_queue[nodehash]:
+			continue
+		for move in node.perform_moves():
 			hashy = move.gethash()
 			if hashy in closed_queue.keys() and closed_queue[hashy] <= move.g:
 				continue
 			heapq.heappush(open_queue, move)
-		hashy = node.gethash()
-		if hashy not in closed_queue.keys() or closed_queue[hashy] > node.g:
-			closed_queue[node.gethash()] = node.g
-		if i == 3:
-			break
-		# i += 1
+		nodehash = node.gethash()
+		if nodehash not in closed_queue.keys() or closed_queue[nodehash] > node.h:
+			closed_queue[node.gethash()] = node.h
 	print(f'open_queue still has a length of {len(open_queue)}')
 	print(f'closed queue has {len(closed_queue)} items in it')
-	return 0
+	return None
 
 
-def bfs(start: Node) -> int:
-	print(f'LETS START BFS')
-	open_queue = deque()
-	open_queue.append(start)
-	while len(open_queue) > 0:
-		node = open_queue.popleft()
-		# print(f'POPPING node:\n{node}')
-		if node.h < 1:
-			print(f'h={node.h}')
-			print(node)
-			return node.g
-		for move in node.perform_moves():
-			open_queue.append(move)
-	print(f'open_queue still has a length of {len(open_queue)}')
-	return 0
+def print_history(node: Node) -> None:
+	if node.parent is not None:
+		print_history(node.parent)
+	print(node)
 
 
 def parse(fstr: str) -> Node:
@@ -247,12 +260,11 @@ def parse(fstr: str) -> Node:
 
 def main(fstr: str):
 	start = parse(fstr)
-	print(start)
 	ans = pathfind(start)
-	# ans = bfs(start)
-	print(f'ans={ans}')
-	return ans
+	print_history(ans)
+	return ans.g
 
 
 if __name__ == '__main__':
-	ret = main('example.txt')
+	# assert main('example.txt') == 12521
+	print(f'Part1: {main("input.txt")}')
