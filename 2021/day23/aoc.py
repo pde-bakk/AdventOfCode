@@ -74,10 +74,15 @@ class Node:
 			yield pos, goal
 
 	def heuristic(self):
+		print(self)
 		self.h = 0
 		for i, (positions, goals) in enumerate(self.get_amphipods()):
+			print(f'{i}')
 			for pos, goalpos in zip(sorted(list(positions)), sorted(list(goals))):
-				self.h += Node.calc_distance(pos, goalpos) * (10 ** i)
+				print(f'pos={pos}, goalpos={goalpos}')
+				extra = Node.calc_distance(pos, goalpos) * (10 ** i)
+				print(f'extra={extra}')
+				self.h += extra
 		return self.h
 
 	def f(self) -> int:
@@ -146,13 +151,19 @@ class Node:
 				y, x = move
 				try:
 					if y >= 2:
-						assert move in Node.goals[amphi_type]  # Amphipods will never move from the hallway into a room unless that room is their destination room
-						assert not self.has_strays(move, amphi_type)  # And that room contains no amphipods which do not also have that room as their own destination.
-					assert move not in Node.doors  # Amphipods will never stop on the space immediately outside any room.
-					assert not (curr_pos[0] == 1 and y == 1)  # Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room.
+						assert move in Node.goals[amphi_type]
+						# Amphipods will never move from the hallway into a room unless that room is their destination room
+						assert not self.has_strays(move, amphi_type)
+						# And that room contains no amphipods which do not also have that room as their own destination.
+					assert move not in Node.doors
+					# Amphipods will never stop on the space immediately outside any room.
+					assert not (curr_pos[0] == 1 and y == 1)
+					# Once an amphipod stops moving in the hallway, it will stay in that spot until it can move into a room.
 					pruned.add(move)
 				except AssertionError:
 					continue
+			if pruned:
+				print(f'{curr_pos}=>{sorted(list(pruned))}')
 			return pruned
 
 		def getneighbours(pos):
@@ -186,10 +197,6 @@ class Node:
 			for amphi_idx, amphi in enumerate(amphipods):
 				possiblemoves = self.get_possible_moves(amphi, amphi_type)
 				for target_pos in possiblemoves:
-					ay, ax = amphi
-					if amphi in Node.goals[amphi_type] and (Node.grid[ay + 1][ax] == '#' or amphipods[amphi_idx - 1] == (amphi[0] + 1, amphi[1])):
-						# Amphipod is already in goal position, don't move
-						continue
 					new_node = Node(self)
 					listy = new_node[amphi_type]
 					listy[amphi_idx] = target_pos
@@ -205,7 +212,7 @@ def pathfind(start: Node) -> Node:
 	heapq.heappush(open_queue, start)
 	while len(open_queue) > 0:
 		node = heapq.heappop(open_queue)
-		# print(f'Popping:\n{node}')
+		print(f'Popping:\n{node}')
 		if node.h == 0:
 			return node
 		nodehash = node.gethash()
@@ -243,14 +250,18 @@ def parse(fstr: str, part: int = 1) -> Node:
 
 
 def main(fstr: str, part: int = 1):
+	global tiebreaker
+	tiebreaker = 0
 	start = parse(fstr, part)
+	print(start.h)
+	exit()
 	ans = pathfind(start)
 	print_history(ans)
 	return ans.g
 
 
 if __name__ == '__main__':
-	assert main('example.txt') == 12521
-	print(f'Part1: {main("input.txt")}')
+	# assert main('example.txt') == 12521
+	# print(f'Part1: {main("input.txt")}')
 	assert main('example.txt', part=2) == 44169
 	print(f'Part2: {main("input.txt", part=2)}')
