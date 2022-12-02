@@ -4,7 +4,21 @@ my_score, elf_score = [], []
 for line in lines:
 	elf, you = list(map(ord, line.split()))
 	print(f'{chr(elf)} vs {chr(you)}')
-	you -= ord('Z') - ord('C')
+	if you == ord('Y'):
+		you = elf
+	elif you == ord('X'):
+		if elf == ord('A'):
+			you = ord('C')
+		else:
+			you = elf - 1
+		# you = elf - 1 if elf != ord('A') else ord('C')
+	elif you == ord('Z'):
+		if elf == ord('C'):
+			you = ord('A')
+		else:
+			you = elf + 1
+		# you = elf + 1 if elf != ord('C') else ord('A')
+	print(f'you chose {chr(you)}')
 	my_tmp_score = you - ord('A') + 1
 	elf_tmp_score = elf - ord('A') + 1
 	if you == elf:
