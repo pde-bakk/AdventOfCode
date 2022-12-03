@@ -11,7 +11,7 @@ for i, line in enumerate(lines):
 		else:
 			value = ord(item) - ord('A') + 27
 		total += value
-print(total)
+print(f'Part 1: {total}')
 
 elfs = []
 total = 0
@@ -28,4 +28,4 @@ for i, line in enumerate(lines):
 			else:
 				value = ord(item) - ord('A') + 27
 			total += value
-print(total)
+print(f'Part 2: {total}')
