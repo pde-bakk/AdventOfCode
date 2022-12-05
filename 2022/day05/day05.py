@@ -15,8 +15,8 @@ print(containers)
 for line in I.splitlines():
 	ints = [*map(int, re.findall(r'\d+', line))]
 	print(ints)
-	for i in range(ints[0]):
-		top = containers[ints[1] - 1].pop()
+	for i in range(ints[0], 0, -1):
+		top = containers[ints[1] - 1].pop(-i)
 		containers[ints[2] - 1].append(top)
 for c in containers:
 	print(c[-1], end='')
