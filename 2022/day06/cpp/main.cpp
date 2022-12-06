@@ -2,16 +2,15 @@
 // Created by peer on 6-12-22.
 //
 #include <iostream>
-#include <istream>
 #include <fstream>
 #include <string>
-#include <set>
+#include <unordered_set>
 
 void	find_start_of_packet(const std::string& line, const size_t packet_length) {
 	const char* const line_start = line.data();
 	for (size_t i = packet_length; i < line.size(); i++) {
 		auto end = line_start + i;
-		std::set packet(end - packet_length, end);
+		std::unordered_set packet(end - packet_length, end);
 		if (packet.size() == packet_length) {
 			std::cout << i << '\n';
 			return ;
