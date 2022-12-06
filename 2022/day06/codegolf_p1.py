@@ -1,4 +1,4 @@
-i,f=4,open(0).read()
+i,f=4,next(open(0))
 while 1:
- if len(set(f[i-4:i]))==4:exit(print(i))
+ if len(set(f[i-4:i]))>3:exit(print(i))
  i+=1
