@@ -1,5 +1,4 @@
-i,f=13,next(open(0))
+i,f=14,next(open(0))
 while f:
+ if len({*f[i-14:i]})>13:f=print(i)
  i+=1
- if len({*f[i-14:i]})>13:f=0
-print(i)
