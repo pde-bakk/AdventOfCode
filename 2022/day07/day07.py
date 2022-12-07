@@ -4,7 +4,7 @@ with open('input.txt', 'r') as f:
 last_cmd = None
 cwd = ''
 directories = {
-
+	'/': 0
 }
 for line in lines:
 	print(line)
@@ -36,12 +36,31 @@ for line in lines:
 			dirsize = directories.get(subpath, 0)
 			dirsize += size
 			directories[subpath] = dirsize
-			subpath = subpath[:subpath.rfind('/')]
+			print(f'{subpath} = {dirsize} now')
+			new_subpath = subpath[:subpath.rfind('/')]
+			if subpath != '/' and new_subpath == '':
+				subpath = '/'
+			else:
+				subpath = new_subpath
+		# directories['/'] += size
+		# print(f'"/" = {directories["/"]} now')
 
-
-part_1 = 0
+part_1 = part_2 = 0
 for directory, size in directories.items():
 	print(f'{directory} has size {size}')
-	if size <= 100000:
+	if size <= 100000 and directory != '/':
 		part_1 += size
 print(f'Part_1: {part_1}')
+
+
+TOTAL_SPACE = 70_000_000
+WANTED_UNUSED_SPACE = 30_000_000
+TOTAL_USED_SPACE = directories['/']
+UNUSED = TOTAL_SPACE - TOTAL_USED_SPACE
+print(f'{TOTAL_SPACE=}, {TOTAL_USED_SPACE=}, {UNUSED=}')
+print(f'{UNUSED=} + size >= {WANTED_UNUSED_SPACE=}')
+for size in sorted(directories.values()):
+	print(f'{size=}')
+	if UNUSED + size >= WANTED_UNUSED_SPACE:
+		print(f'Part 2: {size}')
+		break
