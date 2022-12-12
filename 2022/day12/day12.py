@@ -61,7 +61,9 @@ neighbours = [Node([yy, xx]) for yy, xx in [(1, 0), (0, 1), (0, -1), (-1, 0)]]
 assert start and goal
 print(f'start = {start.y, start.x}, goal = {goal.y, goal.x}')
 # Q = [start]
-Q = deque([start])
+# Q = deque([start])
+# part 2:
+Q = deque([Node([y, x]) for x in range(len(lines[0])) for y in range(len(lines)) if lines[y][x] == ord('a')])
 kaart = [['.' for _ in line]for line in lines]
 found = False
 visited = set()
