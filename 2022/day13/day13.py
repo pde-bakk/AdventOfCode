@@ -1,3 +1,6 @@
+from functools import cmp_to_key
+
+
 def cmp(a: int | list, b: int | list) -> int:
 	if isinstance(a, int) and isinstance(b, int):
 		return a - b
@@ -15,18 +18,17 @@ def cmp(a: int | list, b: int | list) -> int:
 
 with open('input.txt', 'r') as f:
 	pairs = f.read().split('\n\n')
-
 part_1 = []
+total = [[[2]], [[6]]]
 for i, pair in enumerate(pairs, start=1):
 	first, second = pair.splitlines()
 	left, right = eval(first), eval(second)
-	print(f'{left=}, {right=}')
 	in_order = cmp(left, right)
 	if in_order <= 0:
 		part_1.append(i)
-		print(f'Pair {i} is in order, boss!, result={in_order}')
-	else:
-		print(f'Pair {i} is not in order, sorry. result={in_order}')
-	print()
+	total.extend([left, right])
 
 print(f'Part 1: {sum(part_1)}')
+total.sort(key=cmp_to_key(cmp))
+decoder_key = (total.index([[2]]) + 1) * (total.index([[6]]) + 1)
+print(f'Part 2: {decoder_key}')
