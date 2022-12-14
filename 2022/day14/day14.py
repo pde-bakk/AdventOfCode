@@ -1,24 +1,17 @@
-import copy
-
-
 def setup_rocks(rows: list[str]) -> set:
 	rocks = set()
 	for row in rows:
 		coords = [tuple(map(int, x.split(','))) for x in row.split(' -> ')]
-		for i, coord in enumerate(coords[1:], start=1):
-			a, b = min(coord, coords[i - 1]), max(coord, coords[i - 1])
-			if a[0] == b[0]:  # x same
-				for y in range(a[1], b[1] + 1):
-					rocks.add((a[0], y))
-			elif a[1] == b[1]:
-				for x in range(a[0], b[0] + 1):
-					rocks.add((x, b[1]))
-			else:
-				raise NotImplementedError
+		for (x1, y1), (x2, y2) in zip(coords, coords[1:]):
+			x1, x2 = sorted([x1, x2])
+			y1, y2 = sorted([y1, y2])
+			for y in range(y1, y2 + 1):
+				for x in range(x1, x2 + 1):
+					rocks.add((x, y))
 	return rocks
 
 
-def print_example(rocks: set[tuple]):
+def print_example(rocks: set[tuple]) -> None:
 	for y in range(10):
 		s = ['#' if (x, y) in rocks else '.' for x in range(494, 504)]
 		print(''.join(s))
