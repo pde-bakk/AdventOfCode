@@ -24,6 +24,7 @@ for y in range(10):
 	print(''.join(s))
 rocks_amount = len(rocks)
 highest = max([y for x, y in rocks])
+
 print(f'There are {rocks_amount} rocks and the highest y value is {highest}')
 old_rocks = copy.deepcopy(rocks)
 alive = True
@@ -31,6 +32,7 @@ while alive:
 	old_sand_pos = None
 	sand_pos = (500, 0)
 	while sand_pos != old_sand_pos:
+		# print(f'{sand_pos} != {old_sand_pos}: {sand_pos != old_sand_pos}')
 		old_sand_pos = tuple(sand_pos)
 		x, y = sand_pos
 		down, downleft, downright = (x, y + 1), (x - 1, y + 1), (x + 1, y + 1)
@@ -40,12 +42,15 @@ while alive:
 			sand_pos = downleft
 		elif downright not in rocks:
 			sand_pos = downright
-		if sand_pos[1] >= highest:
-			alive = False
+		if sand_pos[1] == highest + 1:
+			print(f'{sand_pos=}, so i break')
+			# alive = False
 			break
 	if alive:
 		rocks.add(sand_pos)
 		print(f'just added {sand_pos}')
+		if sand_pos == (500, 0):
+			break
 
 for y in range(10):
 	s = ['#' if (x, y) in rocks else '.' for x in range(494, 504)]
