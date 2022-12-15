@@ -17,30 +17,26 @@ with open('input.txt', 'r') as f:
 	lines = f.read().splitlines()
 kaart = {}
 sensors = {}
+part_1 = 0
 
 for line in lines:
 	ints = list(map(int, re.findall(r'\d+', line)))
 	x1, y1, x2, y2 = ints
 	sensor, beacon = (y1, x1), (y2, x2)
-	print(f'Sensor at {y1, x1}, Beacon at {y2, x2}')
 	kaart[(y1, x1)] = 'S'
 	kaart[(y2, x2)] = 'B'
 	sensors[sensor] = beacon
 
-y = 2_000_000
-part_1 = 0
-for x in range(-10_000_000, 10_000_000):
-	possible = True
-	if x % 100_000 == 0:
-		print(x)
-	for sensor, beacon in sensors.items():
-		if (y, x) == beacon:
-			possible = False
-			break
-		if get_distance(sensor, (x, y)) <= get_distance(sensor, beacon):
-			possible = False
-			break
-	if not possible:
-		part_1 += 1
+for sensor, beacon in sensors.items():
+	y = 2000000
+	distance = get_distance(sensor, beacon)
+	print(f'Sensor at {sensor}, Beacon at {beacon}, distance = {distance}')
+	for dx in range(-distance, distance + 1):
+		pos = (y, sensor[1] + dx)
+		if get_distance(pos, sensor) > distance:
+			continue
+		if pos not in kaart:
+			kaart[pos] = '#'
+			part_1 += 1
 
 print(f'Part 1: {part_1}')
