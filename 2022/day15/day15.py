@@ -16,6 +16,7 @@ def print_map():
 with open('input.txt', 'r') as f:
 	lines = f.read().splitlines()
 kaart = {}
+sensors = {}
 
 for line in lines:
 	ints = list(map(int, re.findall(r'\d+', line)))
@@ -24,12 +25,22 @@ for line in lines:
 	print(f'Sensor at {y1, x1}, Beacon at {y2, x2}')
 	kaart[(y1, x1)] = 'S'
 	kaart[(y2, x2)] = 'B'
-	dist = get_distance(sensor, beacon)
-	for dy in range(-dist, dist + 1):
-		for dx in range(-dist, dist + 1):
-			pos = (sensor[0] + dy, sensor[1] + dx)
-			if pos not in kaart and abs(dx) + abs(dy) <= dist:
-				kaart[pos] = '#'
+	sensors[sensor] = beacon
 
-# print_map()
-print(f'Part 1:', sum(1 for y, x in kaart.keys() if y == 10 and kaart[(y, x)] == '#'))
+y = 2_000_000
+part_1 = 0
+for x in range(-10_000_000, 10_000_000):
+	possible = True
+	if x % 100_000 == 0:
+		print(x)
+	for sensor, beacon in sensors.items():
+		if (y, x) == beacon:
+			possible = False
+			break
+		if get_distance(sensor, (x, y)) <= get_distance(sensor, beacon):
+			possible = False
+			break
+	if not possible:
+		part_1 += 1
+
+print(f'Part 1: {part_1}')
