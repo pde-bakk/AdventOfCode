@@ -6,11 +6,11 @@ def get_distance(a, b) -> int:
 
 
 def print_map():
-	for y in range(-2, 23):
+	for _y in range(-2, 23):
 		s = []
-		for x in range(-4, 26):
-			s.append(kaart.get((y, x), '.'))
-		print(y, ''.join(s))
+		for _x in range(-4, 26):
+			s.append(kaart.get((_y, _x), '.'))
+		print(_y, ''.join(s))
 
 
 with open('input.txt', 'r') as f:
@@ -27,16 +27,15 @@ for line in lines:
 	kaart[(y2, x2)] = 'B'
 	sensors[sensor] = beacon
 
-for sensor, beacon in sensors.items():
+for sensor, beacon in sorted(sensors.items()):
 	y = 2000000
 	distance = get_distance(sensor, beacon)
-	print(f'Sensor at {sensor}, Beacon at {beacon}, distance = {distance}')
-	for dx in range(-distance, distance + 1):
-		pos = (y, sensor[1] + dx)
-		if get_distance(pos, sensor) > distance:
-			continue
-		if pos not in kaart:
-			kaart[pos] = '#'
+	dist_to_line = abs(sensor[0] - y)
+	start = sensor[1] - (distance - dist_to_line)
+	end = sensor[1] + (distance - dist_to_line)
+	for x in range(start, end):
+		if (y, x) not in kaart:
+			kaart[(y, x)] = '#'
 			part_1 += 1
 
 print(f'Part 1: {part_1}')
