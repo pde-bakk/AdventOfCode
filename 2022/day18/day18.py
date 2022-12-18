@@ -17,7 +17,7 @@ def part_1() -> int:
 
 
 def part_2() -> int:
-	r = range(22)
+	r = range(-1, 23)
 	all_space = {(x, y, z) for x in r for y in r for z in r}
 	empty_space = all_space - lines
 	visited = set()
