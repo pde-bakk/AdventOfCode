@@ -1,6 +1,3 @@
-import copy
-
-
 def solve(old_ints: list, key: int = 1, iterations: int = 1):
 	ints = [(i, key * x) for i, x in old_ints]
 	length = len(ints)
@@ -21,7 +18,5 @@ def solve(old_ints: list, key: int = 1, iterations: int = 1):
 
 with open('input.txt', 'r') as f:
 	integers = [(i, int(x)) for i, x in enumerate(f)]
-decryption_key = 811589153
-
 print(f'Part 1: {solve(integers)}')
-print(f'Part 2: {solve(integers, key=decryption_key, iterations=10)}')
+print(f'Part 2: {solve(integers, key=811589153, iterations=10)}')
