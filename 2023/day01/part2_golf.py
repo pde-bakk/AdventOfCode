@@ -1,8 +1,5 @@
-L='one two three four five six seven eight nine'.split()
+L='one 1 two 2 three 3 four 4 five 5 six 6 seven 7 eight 8 nine 9'.split()
 S=0
-e=enumerate
 for r in open(0):
-	for i,l in e(L):r=r.replace(l,l[0]+str(i+1)+l[2:])
-	d=[(i,int(c))for i,c in e(r)if'/'<c<':']
-	S+=min(d)[1]*10+max(d)[1]
+	l=[];for a in L:l+=[(i,1+(L.index(a)//2))for i in range(len(r))if a==r[i:i+len(a)]];S+=10*min(l)[1]+max(l)[1]
 print(S)
