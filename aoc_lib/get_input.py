@@ -12,7 +12,6 @@ def get_input_for_day(day: int, year: int) -> str:
 		sys.exit(1)
 	os.environ['AOC_SESSION'] = os.environ['AOC_SESSION'].replace('session=', '')
 	r = requests.get(url=f'https://adventofcode.com/{year}/day/{day}/input', cookies={'session': os.environ['AOC_SESSION']})
-	print(r.json())
 	if r.status_code != requests.codes.ok:
 		print(f'Can\'t retrieve the input file, unfortunately, status code = {r.status_code}', file=sys.stderr)
 		sys.exit(2)
@@ -32,7 +31,7 @@ def get_example_input(day: int, year: int) -> str:
 
 def get_file(filename: str) -> list[str]:
 	*_, year, day = os.getcwd().split(os.path.sep)
-	day = int(day.replace('day',''))
+	day = int(day.replace('day', ''))
 	input_filename = os.path.join(os.getcwd(), filename)
 	if os.path.exists(input_filename):
 		with open(input_filename, 'r') as f:
