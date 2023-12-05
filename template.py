@@ -3,6 +3,7 @@ import math
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
+from aoc_lib.extra_input_utils import split_on_double_newlines_instead
 
 
 def aoc(lines: list[str], prefix: str) -> None:

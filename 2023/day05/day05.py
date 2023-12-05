@@ -3,15 +3,15 @@ import math
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
-import functools
+from aoc_lib.extra_input_utils import split_on_double_newlines_instead
 
 
 def do_part1(lines: list[str]):
-	x = '\n'.join(lines).split('\n\n')
-	seeds = lmap(int, x[0].replace('seeds: ', '').split())
+	seeds, *mappings = lines
+	seeds = lmap(int, seeds.split()[1:])
 	seeds_d = {seed: [seed] for seed in seeds}
 
-	for mapping in x[1:]:
+	for mapping in mappings:
 		name, *lines = mapping.splitlines()
 		new_seed_mapping = {seed: [] for seed, arr in seeds_d.items()}
 		for line in lines:
@@ -28,7 +28,7 @@ def do_part1(lines: list[str]):
 
 
 def do_part2(lines: list[str]):
-	seeds, *mappings = '\n'.join(lines).split('\n\n')
+	seeds, *mappings = lines
 	seeds = lmap(int, seeds.split()[1:])
 	mappings = [[lmap(int, line.split()) for line in m.splitlines()[1:]] for m in mappings]
 
@@ -63,6 +63,7 @@ def do_part2(lines: list[str]):
 
 
 def aoc(lines: list[str], prefix: str) -> None:
+	lines = split_on_double_newlines_instead(lines)
 	part1 = do_part1(lines)
 	part2 = do_part2(lines)
 
@@ -72,4 +73,4 @@ def aoc(lines: list[str], prefix: str) -> None:
 
 if __name__ == '__main__':
 	aoc(get_example_file(), 'Example')
-	# aoc(get_input_file(), 'Solution')
+	aoc(get_input_file(), 'Solution')
