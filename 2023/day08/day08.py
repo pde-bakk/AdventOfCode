@@ -1,7 +1,6 @@
 import sys
 import math
 import typing
-import numpy as np
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
