@@ -12,8 +12,7 @@ def parse_input(lines: list[str]) -> typing.Tuple[str, dict[str, dict[str, str]]
 	instr, _, *nodes = lines
 	d = {}
 	for node in nodes:
-		for c in ',()':
-			node = node.replace(c, '')
+		node = replace_all(node, '(),')
 		key, _, left, right = node.split()
 		d[key] = {'L': left, 'R': right}
 	return instr, d
