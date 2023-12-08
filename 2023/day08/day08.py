@@ -9,7 +9,7 @@ from aoc_lib.utilities import *
 from aoc_lib.extra_input_utils import split_on_double_newlines_instead
 
 
-def parse_input(lines: list[str]) -> typing.Tuple[str, dict[str, dict[str, str]] ]:
+def parse_input(lines: list[str]) -> typing.Tuple[str, dict[str, dict[str, str]]]:
 	instr, _, *nodes = lines
 	d = {}
 	for node in nodes:
@@ -20,7 +20,7 @@ def parse_input(lines: list[str]) -> typing.Tuple[str, dict[str, dict[str, str]]
 	return instr, d
 
 
-def p1(instr, d, key='AAA'):
+def p1(instr, d, key='AAA') -> int:
 	part1 = 0
 	while key != 'ZZZ':
 		x = instr[part1 % len(instr)]
@@ -29,7 +29,7 @@ def p1(instr, d, key='AAA'):
 	return part1
 
 
-def p2_route(instr, d, key):
+def p2_route(instr, d, key) -> int:
 	i = 0
 	while key[-1] != 'Z':
 		x = instr[i % len(instr)]
@@ -43,10 +43,7 @@ def aoc(lines: list[str], prefix: str) -> None:
 	print(f'{prefix} part 1: {p1(instr, d)}')
 
 	p2_dists = [p2_route(instr, d, key) for key in d if key[-1] == 'A']
-	print(p2_dists, np.lcm.reduce(p2_dists))
-	part2 = np.lcm.reduce(p2_dists)
-
-	print(f'{prefix} part 2: {part2}')
+	print(f'{prefix} part 2: {math.lcm(*p2_dists)}')
 
 
 if __name__ == '__main__':
