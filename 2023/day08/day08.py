@@ -29,7 +29,7 @@ def p1(instr, d, key='AAA') -> int:
 
 def p2_route(instr, d, key) -> int:
 	i = 0
-	while key[-1] != 'Z':
+	while not key.endswith('Z'):
 		x = instr[i % len(instr)]
 		key = d[key][x]
 		i += 1
@@ -40,7 +40,7 @@ def aoc(lines: list[str], prefix: str) -> None:
 	instr, d = parse_input(lines)
 	print(f'{prefix} part 1: {p1(instr, d)}')
 
-	p2_dists = [p2_route(instr, d, key) for key in d if key[-1] == 'A']
+	p2_dists = [p2_route(instr, d, key) for key in d if key.endswith('A')]
 	print(f'{prefix} part 2: {math.lcm(*p2_dists)}')
 
 
