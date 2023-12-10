@@ -25,7 +25,6 @@ def check_connect_back(cur_pos, npos, lines):
 
 
 def solve(lines: list[str]):
-	# print(*lines, sep='\n')
 	start_y, start_x = [(y, x) for y in range(len(lines)) for x in range(len(lines[y])) if lines[y][x] == 'S'][0]
 	seen = set()
 	q = [(start_y, start_x)]
@@ -40,14 +39,35 @@ def solve(lines: list[str]):
 				q.append((ny, nx))
 				dists[ny][nx] = min(dists[ny][nx], dists[y][x] + 1)
 	dists = [[[d, 0][d == math.inf] for d in di] for di in dists]
-	# print(*lines, sep='\n')
-	# print(*dists, sep='\n')
-	return max(map(max, dists))
+	return max(map(max, dists)), seen
+
+
+def solve2(lines: list[str], main_pipe: set):
+	not_in_main_pipe = set([(y, x) for y in range(len(lines)) for x in range(len(lines[y]))]) - main_pipe
+	lines = [list(line) for line in lines]
+	# print(f'{main_pipe=}')
+	total = 0
+	w, h = len(lines[0]), len(lines)
+	for y, x in not_in_main_pipe:
+		border_crossings = 0
+		y2, x2 = y, x
+		while x2 < w and y2 < h:
+			c2 = lines[y2][x2]
+			if (y2, x2) in main_pipe and c2 not in 'L7':
+				border_crossings += 1
+			x2 += 1
+			y2 += 1
+		if border_crossings % 2 == 1:
+			total += 1
+			lines[y][x] = 'I'
+	for line in lines:
+		print(''.join(line))
+	return total
 
 
 def aoc(lines: list[str], prefix: str) -> None:
-	part1 = solve(lines)
-	part2 = 0
+	part1, main_pipe = solve(lines)
+	part2 = solve2(lines, main_pipe)
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')
 
