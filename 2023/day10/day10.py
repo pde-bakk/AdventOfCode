@@ -18,6 +18,12 @@ def get_pipe_neighbours(char: str):
 	return items[char]
 
 
+def check_connect_back(cur_pos, npos, lines):
+	ny, nx = npos
+	nchar = lines[ny][nx]
+	return any([(pn[0] + ny, pn[1] + nx) == cur_pos for pn in get_pipe_neighbours(nchar)])
+
+
 def solve(lines: list[str]):
 	# print(*lines, sep='\n')
 	start_y, start_x = [(y, x) for y in range(len(lines)) for x in range(len(lines[y])) if lines[y][x] == 'S'][0]
@@ -30,12 +36,12 @@ def solve(lines: list[str]):
 		seen.add((y, x))
 		for neighbour in get_pipe_neighbours(lines[y][x]):
 			ny, nx = y + neighbour[0], x + neighbour[1]
-			if 0 <= ny < len(lines) and 0 <= nx < len(lines[y]) and lines[ny][nx] in '|-LJ7F' and (ny, nx) not in seen:
+			if 0 <= ny < len(lines) and 0 <= nx < len(lines[y]) and lines[ny][nx] in '|-LJ7F' and (ny, nx) not in seen and check_connect_back((y, x), (ny, nx), lines):
 				q.append((ny, nx))
 				dists[ny][nx] = min(dists[ny][nx], dists[y][x] + 1)
 	dists = [[[d, 0][d == math.inf] for d in di] for di in dists]
 	# print(*lines, sep='\n')
-	print(*dists, sep='\n')
+	# print(*dists, sep='\n')
 	return max(map(max, dists))
 
 
