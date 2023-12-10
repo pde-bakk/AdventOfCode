@@ -26,16 +26,17 @@ def check_connect_back(cur_pos, npos, lines):
 
 def solve(lines: list[str]):
 	start_y, start_x = [(y, x) for y in range(len(lines)) for x in range(len(lines[y])) if lines[y][x] == 'S'][0]
+	w, h = len(lines[0]), len(lines)
 	seen = set()
 	q = [(start_y, start_x)]
-	dists = [[math.inf for _ in range(len(lines[y]))] for y in range(len(lines))]
+	dists = [[math.inf for _ in range(w)] for y in range(h)]
 	dists[start_y][start_x] = 0
 	while q:
 		y, x = q.pop(0)
 		seen.add((y, x))
 		for neighbour in get_pipe_neighbours(lines[y][x]):
 			ny, nx = y + neighbour[0], x + neighbour[1]
-			if 0 <= ny < len(lines) and 0 <= nx < len(lines[y]) and lines[ny][nx] in '|-LJ7F' and (ny, nx) not in seen and check_connect_back((y, x), (ny, nx), lines):
+			if 0 <= ny < h and 0 <= nx < w and lines[ny][nx] in '|-LJ7F' and (ny, nx) not in seen and check_connect_back((y, x), (ny, nx), lines):
 				q.append((ny, nx))
 				dists[ny][nx] = min(dists[ny][nx], dists[y][x] + 1)
 	dists = [[[d, 0][d == math.inf] for d in di] for di in dists]
@@ -44,8 +45,6 @@ def solve(lines: list[str]):
 
 def solve2(lines: list[str], main_pipe: set):
 	not_in_main_pipe = set([(y, x) for y in range(len(lines)) for x in range(len(lines[y]))]) - main_pipe
-	lines = [list(line) for line in lines]
-	# print(f'{main_pipe=}')
 	total = 0
 	w, h = len(lines[0]), len(lines)
 	for y, x in not_in_main_pipe:
@@ -59,9 +58,6 @@ def solve2(lines: list[str], main_pipe: set):
 			y2 += 1
 		if border_crossings % 2 == 1:
 			total += 1
-			lines[y][x] = 'I'
-	for line in lines:
-		print(''.join(line))
 	return total
 
 
