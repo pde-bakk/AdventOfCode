@@ -24,9 +24,7 @@ def get_galaxies(lines: list[str]) -> typing.List[typing.Tuple[int, int]]:
 	return galaxies
 
 
-def aoc(lines: list[str], prefix: str) -> None:
-	part1 = 0
-	part2 = 0
+def solve(lines: list[str], multiplier: int) -> int:
 	empty_row_indices, empty_col_indices = expand_galaxies(lines)
 	galaxies = get_galaxies(lines)
 	amount_galaxies = len(galaxies)
@@ -44,11 +42,13 @@ def aoc(lines: list[str], prefix: str) -> None:
 			for r in range(min(ay, by), max(ay, by)):
 				if r in empty_row_indices:
 					empty_rows += 1
-			# print(f'{a=}, {galaxies[a]}, {b=}, {galaxies[b]}, dist={d}')
-			arr.append(d + (1000000-1) * (empty_cols + empty_rows))
-	part1 = sum(arr)
-	print(f'{prefix} part 1: {part1}')
-	print(f'{prefix} part 2: {part2}')
+			arr.append(d + (multiplier-1) * (empty_cols + empty_rows))
+	return sum(arr)
+
+
+def aoc(lines: list[str], prefix: str) -> None:
+	print(f'{prefix} part 1: {solve(lines, multiplier=2)}')
+	print(f'{prefix} part 2: {solve(lines, multiplier=1_000_000)}')
 
 
 if __name__ == '__main__':
