@@ -302,3 +302,6 @@ fabric.properties
 .vscode/
 cmake-build-debug/
 debug/
+
+*.txt
+# Not allowed to share the input and example files, oops.
