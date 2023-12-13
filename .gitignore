@@ -303,5 +303,7 @@ fabric.properties
 cmake-build-debug/
 debug/
 
-*.txt
+input.txt
+example.txt
+sample.txt
 # Not allowed to share the input and example files, oops.
