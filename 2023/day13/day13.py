@@ -29,11 +29,9 @@ def aoc(lines: list[str], prefix: str) -> None:
 	part1 = 0
 	part2 = 0
 	for i, p in enumerate(patterns):
-		print(p)
 		data = np.array([list(r) for r in p])
 		horizontal = check_for_i(data, False)
 		vertical = check_for_i(data.T, False)
-		print(f'For pattern {i}, {horizontal=}, {vertical=}')
 		part1 += horizontal + 100 * vertical
 
 		horizontal = check_for_i(data, True)
