@@ -6,11 +6,10 @@ from lxml.html import fromstring
 
 
 def get_input_for_day(day: int, year: int) -> str:
-	dotenv.load_dotenv('../../.env')
+	_ = dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
 	if not os.environ['AOC_SESSION']:
 		print('Please provide the env variable "AOC_SESSION" with your session token', file=sys.stderr)
 		sys.exit(1)
-	os.environ['AOC_SESSION'] = os.environ['AOC_SESSION'].replace('session=', '')
 	r = requests.get(url=f'https://adventofcode.com/{year}/day/{day}/input', cookies={'session': os.environ['AOC_SESSION']})
 	if r.status_code != requests.codes.ok:
 		print(f'Can\'t retrieve the input file, unfortunately, status code = {r.status_code}', file=sys.stderr)
