@@ -20,7 +20,6 @@ def check_for_i(p: np.ndarray, p2):
 	width, height = len(p[0]), len(p)
 	for i in range(1, width):
 		if check_equality(p, i, p2):
-			print(f'equal for {i=}')
 			return i
 	return 0
 
