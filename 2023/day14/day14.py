@@ -11,19 +11,14 @@ from aoc_lib.extra_input_utils import split_on_double_newlines_instead
 
 
 def np_move_rock(lines: np.ndarray, start: tuple[int, int]):
-	direction = (-1, 0)
 	width, height = len(lines[0]), len(lines)
 	y, x = start
-	dy, dx = direction
+	dy, dx = (-1, 0)  # Because I'm calling np.rot90 to handle my rotations, I just move upwards
 	while 0 <= y + dy < height and 0 <= x + dx < width and lines[y+dy][x+dx] == '.':
 		y = y + dy
 		x = x + dx
-	# if direction == (0, -1):
-	# 	print(f'{width=}, {height=}, {y,x=}, {start=}, {dy, dx=}')
 	if start == (y, x):
 		return
-	# if direction == (0, -1):
-	# 	print(f'{start=}, {y, x=}, {dy, dx=}, end_char={lines[y][x]}')
 	lines[y][x] = 'O'
 	lines[start[0]][start[1]] = '.'
 
@@ -36,11 +31,9 @@ def roll_upwards(lines: np.ndarray) -> np.ndarray:
 	return lines
 
 
-def solve_p2(data, i, seenkey, scores, max_cycles):
+def solve_p2(i: int, seenkey: int, max_cycles: int) -> int:
 	cycle_length = i - seenkey
-	idx = seenkey + (max_cycles - seenkey) % cycle_length
-	print(f'{i=}, {cycle_length=}, seen[key]={seenkey}, {idx=}')
-	return scores[idx]
+	return seenkey + (max_cycles - seenkey) % cycle_length
 
 
 def calculate_load(lines: np.ndarray) -> int:
@@ -48,7 +41,6 @@ def calculate_load(lines: np.ndarray) -> int:
 	for i, line in enumerate(lines):
 		load_level = len(lines) - i
 		load += load_level * np.count_nonzero(line == 'O')
-		# print(f'{load_level=}, {line=="O"}', np.count_nonzero(line == 'O'))
 	return load
 
 
@@ -61,7 +53,8 @@ def aoc(lines: list[str], prefix: str) -> None:
 	for i in range(max_cycles):
 		key = data.tobytes()
 		if key in seen:
-			part2 = solve_p2(data, i, seen[key], scores, max_cycles)
+			idx = solve_p2(i, seen[key], max_cycles)
+			part2 = scores[idx]
 			break
 		seen[key] = i
 		scores[i] = calculate_load(data)
