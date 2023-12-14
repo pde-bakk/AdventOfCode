@@ -57,6 +57,7 @@ def aoc(lines: list[str], prefix: str) -> None:
 	seen, scores = {}, {}
 	part2 = 0
 	max_cycles = 1_000_000_000
+	print(f'{prefix} part 1: {calculate_load(roll_upwards(data))}')
 	for i in range(max_cycles):
 		key = data.tobytes()
 		if key in seen:
@@ -67,9 +68,6 @@ def aoc(lines: list[str], prefix: str) -> None:
 		for rot in 'NWSE':
 			data = roll_upwards(data)
 			data = np.rot90(data, k=3)
-	# p1 = roll_towards('North', lines)
-	# print(f'{prefix} part 1: {calculate_load(p1)}')
-
 	print(f'{prefix} part 2: {part2}')
 
 
