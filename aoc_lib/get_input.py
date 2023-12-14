@@ -7,8 +7,10 @@ from lxml.html import fromstring
 
 def get_input_for_day(day: int, year: int) -> str:
 	_ = dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
-	if not os.environ['AOC_SESSION']:
-		print('Please provide the env variable "AOC_SESSION" with your session token', file=sys.stderr)
+	if 'AOC_SESSION' not in os.environ:
+		print(f'Please provide a .env file with your AOC_SESSION token', file=sys.stderr)
+		print(f'To find your token, check out this link: https://github.com/wimglenn/advent-of-code-wim/issues/1', file=sys.stderr)
+		print(f'Example:\n$ cat .env\nAOC_SESSION=abcdef', file=sys.stderr)
 		sys.exit(1)
 	r = requests.get(url=f'https://adventofcode.com/{year}/day/{day}/input', cookies={'session': os.environ['AOC_SESSION']})
 	if r.status_code != requests.codes.ok:
