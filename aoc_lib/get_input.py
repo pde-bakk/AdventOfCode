@@ -31,6 +31,7 @@ def get_example_input(day: int, year: int) -> str:
 def get_file(filename: str) -> list[str]:
 	*_, year, day = os.getcwd().split(os.path.sep)
 	day = int(day.replace('day', ''))
+	year = int(year)
 	input_filename = os.path.join(os.getcwd(), filename)
 	if os.path.exists(input_filename):
 		with open(input_filename, 'r') as f:

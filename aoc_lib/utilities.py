@@ -1,4 +1,5 @@
 import re
+import typing
 
 
 def lmap(func, *it) -> list:
@@ -27,10 +28,10 @@ def words(s: str) -> list[str]:
 
 def get_directions(diagonal: bool = False) -> list[tuple[int, int]]:
 	directions = [
-		(0, 1),  # South
-		(0, -1),  # North
-		(1, 0),  # East
-		(-1, 0),  # West
+		(1, 0),  # South
+		(-1, 0),  # North
+		(0, 1),  # East
+		(0, -1,),  # West
 	]
 	if diagonal:
 		directions += [
@@ -41,6 +42,19 @@ def get_directions(diagonal: bool = False) -> list[tuple[int, int]]:
 		]
 	return directions
 
+
+def get_direction_(direction: str) -> typing.Tuple[int, int]:
+	directions = {
+		'north': (-1, 0),
+		'south': (1, 0),
+		'east': (0, 1),
+		'west': (0, -1),
+		'southeast': (1, 1),
+		'southwest': (1, -1),
+		'northwest': (-1, -1),
+		'northeast': (-1, 1)
+	}
+	return directions[direction.lower()]
 
 def yield_directions(diagonal: bool = False) -> tuple[int, int]:
 	for direction in get_directions(diagonal=diagonal):
