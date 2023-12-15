@@ -5,7 +5,7 @@ import numpy as np
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
-from aoc_lib.extra_input_utils import split_on_double_newlines_instead
+from aoc_lib.extra_input_utils import *
 
 
 def check_equality(p: np.ndarray, x: int, p2) -> bool:
@@ -25,8 +25,8 @@ def check_for_i(p: np.ndarray, p2):
 	return 0
 
 
-def aoc(lines: list[str], prefix: str) -> None:
-	patterns = split_on_double_newlines_instead(lines)
+def aoc(data: str, prefix: str) -> None:
+	patterns = split_on_double_newlines(data)
 	part1 = 0
 	part2 = 0
 	for i, p in enumerate(patterns):

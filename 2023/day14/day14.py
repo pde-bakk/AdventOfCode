@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
-from aoc_lib.extra_input_utils import split_on_double_newlines_instead
+from aoc_lib.extra_input_utils import *
 
 
 def np_move_rock(lines: np.ndarray, start: tuple[int, int]):
@@ -44,7 +44,8 @@ def calculate_load(lines: np.ndarray) -> int:
 	return load
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
+	lines = split_data_on_newlines(data)
 	data = np.array([list(line) for line in lines])
 	seen, scores = {}, {}
 	part2 = 0

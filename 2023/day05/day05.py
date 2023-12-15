@@ -3,16 +3,15 @@ import math
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
-from aoc_lib.extra_input_utils import split_on_double_newlines_instead
+from aoc_lib.extra_input_utils import *
 
 
-def do_part1(lines: list[str]):
+def do_part1(lines: list[list[str]]):
 	seeds, *mappings = lines
-	seeds = lmap(int, seeds.split()[1:])
+	seeds = lmap(int, seeds[0].split()[1:])
 	seeds_d = {seed: [seed] for seed in seeds}
 
-	for mapping in mappings:
-		name, *lines = mapping.splitlines()
+	for name, *lines in mappings:
 		new_seed_mapping = {seed: [] for seed, arr in seeds_d.items()}
 		for line in lines:
 			destination_range_start, source_range_start, range_length = map(int, line.split())
@@ -27,10 +26,10 @@ def do_part1(lines: list[str]):
 	return min([v[-1] for k, v in seeds_d.items()])
 
 
-def do_part2(lines: list[str]):
+def do_part2(lines: list[list[str]]):
 	seeds, *mappings = lines
-	seeds = lmap(int, seeds.split()[1:])
-	mappings = [[lmap(int, line.split()) for line in m.splitlines()[1:]] for m in mappings]
+	seeds = lmap(int, seeds[0].split()[1:])
+	mappings = [[lmap(int, line.split()) for line in m] for (_, *m) in mappings]
 
 	locations = []
 	for i in range(0, len(seeds), 2):
@@ -62,10 +61,10 @@ def do_part2(lines: list[str]):
 	return min(loc[0] for loc in locations)
 
 
-def aoc(lines: list[str], prefix: str) -> None:
-	lines = split_on_double_newlines_instead(lines)
-	part1 = do_part1(lines)
-	part2 = do_part2(lines)
+def aoc(data: str, prefix: str) -> None:
+	segments = split_on_double_newlines(data)
+	part1 = do_part1(segments)
+	part2 = do_part2(segments)
 
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')

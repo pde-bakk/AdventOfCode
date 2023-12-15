@@ -6,7 +6,7 @@ import functools
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
-from aoc_lib.extra_input_utils import split_on_double_newlines_instead
+from aoc_lib.extra_input_utils import *
 
 
 @functools.lru_cache
@@ -18,7 +18,6 @@ def check_legality(s: str, nbs: tuple[int, ...]) -> int:
 		return int('#' not in s)
 
 	if s.startswith('#'):
-		print(f'{s} startswith(#), {len(s)=}')
 		first_nb, *rest = nbs
 		if '.' in s[:first_nb] or len(s) < first_nb:
 			return 0  # Can't fit all the necessary springs
@@ -37,13 +36,12 @@ def check_legality(s: str, nbs: tuple[int, ...]) -> int:
 	return check_legality(s1, nbs) + check_legality(s2, nbs)
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
+	lines = split_data_on_newlines(data)
 	part1 = 0
 	part2 = 0
-	# lines = [lines[1]]
 	for s, nbs in map(str.split, lines):
 		nbs = tuple(int(d) for d in nbs.split(','))
-		print(f'{s=}, {nbs=}')
 		s2 = '?'.join(s for _ in range(5))
 		nbs2 = tuple(nbs * 5)
 		part1 += check_legality(s.strip('.'), nbs)

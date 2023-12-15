@@ -5,7 +5,7 @@ import typing
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
-from aoc_lib.extra_input_utils import split_on_double_newlines_instead
+from aoc_lib.extra_input_utils import *
 
 
 def parse_input(lines: list[str]) -> typing.Tuple[str, dict[str, dict[str, str]]]:
@@ -36,7 +36,8 @@ def p2_route(instr, d, key) -> int:
 	return i
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
+	lines = split_data_on_newlines(data)
 	instr, d = parse_input(lines)
 	print(f'{prefix} part 1: {p1(instr, d)}')
 

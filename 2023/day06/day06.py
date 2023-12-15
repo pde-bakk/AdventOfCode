@@ -3,6 +3,7 @@ import math
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
+from aoc_lib.extra_input_utils import *
 
 
 def calculate_ways_to_win(times: list[int], distances: list[int]) -> int:
@@ -16,7 +17,8 @@ def calculate_ways_to_win(times: list[int], distances: list[int]) -> int:
 	return math.prod(ways_to_win)
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
+	lines = split_data_on_newlines(data)
 	times = lmap(int, lines[0].split()[1:])
 	distances = lmap(int, lines[1].split()[1:])
 	part1 = calculate_ways_to_win(times, distances)

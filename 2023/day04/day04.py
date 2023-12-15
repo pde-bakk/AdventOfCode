@@ -1,11 +1,14 @@
 import sys
 import math
+
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
+from aoc_lib.extra_input_utils import *
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
+	lines = split_data_on_newlines(data)
 	part1 = 0
 	d = {i: 1 for i in range(len(lines))}
 	for i, line in enumerate(lines):

@@ -5,6 +5,7 @@ from aoc_lib.utilities import *
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
+from aoc_lib.extra_input_utils import *
 
 p2_flag = False
 
@@ -20,7 +21,7 @@ def comparison_func(card: tuple[str, str, int]):
 	return get_score(hand) + lmap(card_strengths.index, og_hand)
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
 	def calculate_winnings(x) -> int:
 		return sum([bid * idx for idx, (hand, og_hand, bid) in enumerate(x, start=1)])
 
@@ -33,6 +34,7 @@ def aoc(lines: list[str], prefix: str) -> None:
 
 	global p2_flag
 	p2_flag = False
+	lines = split_data_on_newlines(data)
 	cards = [(hand, hand, int(bid)) for hand, bid in map(str.split, lines)]
 	cards.sort(key=comparison_func)
 	print(f'{prefix} part 1: {calculate_winnings(cards)}')

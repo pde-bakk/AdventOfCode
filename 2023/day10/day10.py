@@ -3,6 +3,7 @@ import math
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
+from aoc_lib.extra_input_utils import *
 
 
 def get_pipe_neighbours(char: str):
@@ -61,7 +62,8 @@ def solve2(lines: list[str], main_pipe: set):
 	return total
 
 
-def aoc(lines: list[str], prefix: str) -> None:
+def aoc(data: str, prefix: str) -> None:
+	lines = split_data_on_newlines(data)
 	part1, main_pipe = solve(lines)
 	part2 = solve2(lines, main_pipe)
 	print(f'{prefix} part 1: {part1}')
@@ -69,5 +71,5 @@ def aoc(lines: list[str], prefix: str) -> None:
 
 
 if __name__ == '__main__':
-	aoc(get_example_file(), 'Example')
+	# aoc(get_example_file(), 'Example')
 	aoc(get_input_file(), 'Solution')
