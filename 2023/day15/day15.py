@@ -6,10 +6,6 @@ from aoc_lib.utilities import *
 from aoc_lib.extra_input_utils import split_on_double_newlines_instead
 
 
-def parse(lines: list[str]):
-	return lines[0].split(',')
-
-
 def hash_algo(string):
 	s = 0
 	for c in string:
@@ -17,7 +13,7 @@ def hash_algo(string):
 	return s
 
 
-def loop(items: list[str]):
+def part1_loop(items: list[str]):
 	arr = []
 	for item in items:
 		arr.append(hash_algo(item))
@@ -25,40 +21,33 @@ def loop(items: list[str]):
 
 
 def aoc(lines: list[str], prefix: str) -> None:
-	part1 = 0
 	part2 = 0
-	items = parse(lines)
-	print(f'{prefix} part 1: {loop(items)}')
+	items = lines[0].split(',')
+	print(f'{prefix} part 1: {part1_loop(items)}')
 	boxes = {}
 
 	for item in items:
 		if '-' in item:
 			label = item[:item.index('-')]
+			h = hash_algo(label)
+			box = boxes.get(h, [])
+			box = [(lbl, lens) for lbl, lens in box if lbl != label]
+			boxes[h] = box
 		elif '=' in item:
 			label, focal_length = item.split('=')
 			focal_length = int(focal_length)
-		else:
-			raise NotImplementedError
-		print(f'{label=}, {hash_algo(label)}')
-		h = hash_algo(label)
-		box = boxes.get(h, [])
-		if '-' in item:
-			box = [(lbl, lens) for lbl, lens in box if lbl != label]
-			boxes[h] = box
-		else:
-			found = False
+			h = hash_algo(label)
+			box = boxes.get(h, [])
 			for i, (lbl, lens) in enumerate(box):
 				if lbl == label:
 					box[i] = (label, focal_length)
-					found = True
 					break
-			if not found:
+			else:  # Only triggers if the for-loop didn't end with a break statement
 				box.append((label, focal_length))
 			boxes[h] = box
 
 	for key, box in boxes.items():
 		if box:
-			print(f'{key}, {box}')
 			for slot, (lbl, lens) in enumerate(box):
 				part2 += (key + 1) * (slot + 1) * lens
 	print(f'{prefix} part 2: {part2}')
