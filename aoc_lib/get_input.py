@@ -30,26 +30,27 @@ def get_example_input(day: int, year: int) -> str:
 	return elements[0]
 
 
-def get_file(filename: str) -> list[str]:
+def get_file(filename: str) -> str:
 	*_, year, day = os.getcwd().split(os.path.sep)
 	day = int(day.replace('day', ''))
 	year = int(year)
 	input_filename = os.path.join(os.getcwd(), filename)
 	if os.path.exists(input_filename):
 		with open(input_filename, 'r') as f:
-			return f.read().splitlines()
+			return f.read()
+			# return f.read().splitlines()
 	if filename == 'example.txt':
 		input_lines = get_example_input(day, year)
 	else:
 		input_lines = get_input_for_day(day, year)
 	with open(input_filename, 'w') as f:
 		f.writelines(input_lines)
-	return input_lines.splitlines()
+	return input_lines
 
 
-def get_input_file() -> list[str]:
+def get_input_file() -> str:
 	return get_file('input.txt')
 
 
-def get_example_file() -> list[str]:
+def get_example_file() -> str:
 	return get_file('example.txt')
