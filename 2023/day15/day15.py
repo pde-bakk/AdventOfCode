@@ -47,9 +47,8 @@ def aoc(lines: list[str], prefix: str) -> None:
 			boxes[h] = box
 
 	for key, box in boxes.items():
-		if box:
-			for slot, (lbl, lens) in enumerate(box):
-				part2 += (key + 1) * (slot + 1) * lens
+		for slot, (lbl, lens) in enumerate(box):
+			part2 += (key + 1) * (slot + 1) * lens
 	print(f'{prefix} part 2: {part2}')
 
 
