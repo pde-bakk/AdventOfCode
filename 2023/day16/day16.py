@@ -1,49 +1,22 @@
 import sys
-import math
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
-from aoc_lib.utilities import *
 from aoc_lib.extra_input_utils import *
 from aoc_lib.directions import *
 
 
 def get_new_directions(tile: str, current_dir: tuple[int, int]) -> list[tuple]:
 	dy, dx = current_dir
-	new_directions = []
-	if tile == '.':
-		new_directions.append(current_dir)
-	elif tile == '/':
-		nd = {
-			NORTH: EAST,
-			SOUTH: WEST,
-			EAST: NORTH,
-			WEST: SOUTH
-		}[current_dir]
-		new_directions.append(nd)
+	if tile == '/':
+		return [(-current_dir[1], -current_dir[0])]
 	elif tile == '\\':
-		nd = {
-			NORTH: WEST,
-			SOUTH: EAST,
-			EAST: SOUTH,
-			WEST: NORTH
-		}[current_dir]
-		new_directions.append(nd)
-	elif tile == '|':
-		if dx:  # Split
-			new_directions.append(NORTH)
-			new_directions.append(SOUTH)
-		else:
-			new_directions.append(current_dir)
-	elif tile == '-':
-		if dy:
-			new_directions.append(EAST)
-			new_directions.append(WEST)
-		else:
-			new_directions.append(current_dir)
-	else:
-		return NotImplemented
-	return new_directions
+		return [current_dir[::-1]]
+	elif tile == '|' and dx:
+		return [NORTH, SOUTH]
+	elif tile == '-' and dy:
+		return [EAST, WEST]
+	return [current_dir]
 
 
 def get_energized(lines, pos, direction) -> int:
