@@ -26,50 +26,6 @@ def words(s: str) -> list[str]:
 	return re.findall(r'[a-zA-Z]+', s)
 
 
-def get_directions(diagonal: bool = False) -> list[tuple[int, int]]:
-	directions = [
-		(1, 0),  # South
-		(-1, 0),  # North
-		(0, 1),  # East
-		(0, -1,),  # West
-	]
-	if diagonal:
-		directions += [
-			(1, 1),  # South East
-			(1, -1),  # South West
-			(-1, 1),  # North East
-			(-1, -1)  # North West
-		]
-	return directions
-
-
-def get_direction_(direction: str) -> typing.Tuple[int, int]:
-	directions = {
-		'north': (-1, 0),
-		'south': (1, 0),
-		'east': (0, 1),
-		'west': (0, -1),
-		'southeast': (1, 1),
-		'southwest': (1, -1),
-		'northwest': (-1, -1),
-		'northeast': (-1, 1)
-	}
-	return directions[direction.lower()]
-
-def yield_directions(diagonal: bool = False) -> tuple[int, int]:
-	for direction in get_directions(diagonal=diagonal):
-		yield direction
-
-
-def get_neighbours(y: int, x: int, diagonal: bool = False) -> list[tuple[int, int]]:
-	return [(y + d[0], x + d[1]) for d in get_directions(diagonal=diagonal)]
-
-
-def yield_neighbours(y: int, x: int, diagonal: bool = False) -> tuple[int, int]:
-	for n in get_neighbours(y, x, diagonal):
-		yield n
-
-
 def distance(pos1: tuple[int, int], pos2: tuple[int, int]) -> float:
 	return ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** 0.5
 
