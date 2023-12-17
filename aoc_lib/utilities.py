@@ -1,5 +1,4 @@
 import re
-import typing
 
 
 def lmap(func, *it) -> list:

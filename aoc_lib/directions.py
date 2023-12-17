@@ -17,14 +17,14 @@ def get_directions(diagonal: bool = False) -> list[tuple[int, int]]:
 
 def get_direction_(direction: str) -> tuple[int, int]:
 	directions = {
-		'north': (-1, 0),
-		'south': (1, 0),
-		'east': (0, 1),
-		'west': (0, -1),
-		'southeast': (1, 1),
-		'southwest': (1, -1),
-		'northwest': (-1, -1),
-		'northeast': (-1, 1)
+		'north': NORTH,
+		'south': SOUTH,
+		'east': EAST,
+		'west': WEST,
+		'southeast': SOUTHEAST,
+		'southwest': SOUTHWEST,
+		'northwest': NORTHWEST,
+		'northeast': NORTHEAST
 	}
 	return directions[direction.lower()]
 
@@ -32,6 +32,10 @@ def get_direction_(direction: str) -> tuple[int, int]:
 def yield_directions(diagonal: bool = False) -> tuple[int, int]:
 	for direction in get_directions(diagonal=diagonal):
 		yield direction
+
+
+def add_directions(a: tuple[int, int], b: tuple[int, int]):
+	return a[0] + b[0], a[1] + b[1]
 
 
 def get_neighbours(y: int, x: int, diagonal: bool = False) -> list[tuple[int, int]]:
