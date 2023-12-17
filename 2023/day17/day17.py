@@ -21,7 +21,7 @@ def pathfind(lines: list[list[int]], min_straightline: int, max_straightline: in
 			return cost
 		for d in [SOUTH, EAST, NORTH, WEST]:
 			added_cost = 0
-			if d == old_direction or d == (old_direction[0] * -1, old_direction[1] * -1):
+			if lmap(abs, d) == lmap(abs, old_direction):
 				continue
 			y, x = position
 			for dist in range(1, max_straightline + 1):
