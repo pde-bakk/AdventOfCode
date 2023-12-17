@@ -11,12 +11,12 @@ from aoc_lib.directions import *
 
 def pathfind(lines: list[list[int]], min_straightline: int, max_straightline: int) -> int:
 	width, height = len(lines[0]), len(lines)
-	q = [(0, (0, 0), (0, 0))]
+	q = [(0, 0, (0, 0), (0, 0))]
 	heapq.heapify(q)
 	goal = (height - 1, width - 1)
 	seen = {}
 	while q:
-		cost, position, old_direction = heapq.heappop(q)
+		cost_plus_dist, cost, position, old_direction = heapq.heappop(q)
 		if position == goal:
 			return cost
 		for d in [SOUTH, EAST, NORTH, WEST]:
@@ -35,7 +35,7 @@ def pathfind(lines: list[list[int]], min_straightline: int, max_straightline: in
 					if seen.get((newpos, d), new_cost + 1) <= new_cost:
 						continue
 					seen[(newpos, d)] = new_cost
-					heapq.heappush(q, (new_cost, newpos, d))
+					heapq.heappush(q, (new_cost + manhattan_distance(newpos, goal), new_cost, newpos, d))
 	return 0
 
 
