@@ -14,13 +14,11 @@ def pathfind(lines: list[list[int]], min_straightline: int, max_straightline: in
 	q = [(0, (0, 0), (0, 0))]
 	heapq.heapify(q)
 	goal = (height - 1, width - 1)
-	seen = set()
-	costs = {}
+	seen = {}
 	while q:
 		cost, position, old_direction = heapq.heappop(q)
 		if position == goal:
 			return cost
-		seen.add((position, old_direction))
 		for d in [SOUTH, EAST, NORTH, WEST]:
 			added_cost = 0
 			if d == old_direction or d == (old_direction[0] * -1, old_direction[1] * -1):
@@ -29,14 +27,14 @@ def pathfind(lines: list[list[int]], min_straightline: int, max_straightline: in
 			for dist in range(1, max_straightline + 1):
 				ny, nx = y + d[0] * dist, x + d[1] * dist
 				if 0 <= ny < height and 0 <= nx < width:
+					newpos = ny, nx
 					added_cost += lines[ny][nx]
 					if dist < min_straightline:
 						continue
 					new_cost = cost + added_cost
-					newpos = ny, nx
-					if costs.get((newpos, d), new_cost + 1) <= new_cost:
+					if seen.get((newpos, d), new_cost + 1) <= new_cost:
 						continue
-					costs[(newpos, d)] = new_cost
+					seen[(newpos, d)] = new_cost
 					heapq.heappush(q, (new_cost, newpos, d))
 	return 0
 
