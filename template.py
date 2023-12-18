@@ -5,6 +5,11 @@ sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
 from aoc_lib.extra_input_utils import *
+from aoc_lib.directions import *
+
+
+def solve(lines: list[str]) -> int:
+	return 0
 
 
 def aoc(data: str, prefix: str) -> None:

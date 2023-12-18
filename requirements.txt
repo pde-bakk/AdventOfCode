@@ -7,3 +7,5 @@ requests==2.31.0
 urllib3==2.1.0
 
 numpy~=1.26.2
+
+shapely~=2.0.2
