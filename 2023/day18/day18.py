@@ -20,20 +20,25 @@ def parse_line2(line: str) -> tuple[str, int, int]:
 	return 'RDLU'[int(c[-2])], int(c[2:-2], 16), 0
 
 
+def shoelace(points: list[Position]) -> int:
+	area = 0
+	for a, b in zip(points, points[1:]):
+		area += (b.x + a.x) * (b.y - a.y)
+	return abs(area) // 2
+
+
 def solve(lines: list[str], part2: bool) -> int:
 	pos = Position(0, 0)
-	x_positions = [0]
-	y_positions = [0]
+	points = []
 	total_length = 0
 	for direction, dist, _ in map([parse_line, parse_line2][part2], lines):
 		d = {'U': NORTH, 'D': SOUTH, 'R': EAST, 'L': WEST}[direction]
 		pos += d * dist
 		total_length += dist
-		x_positions.append(pos.x)
-		y_positions.append(pos.y)
+		points.append(pos)
 
-	pgon = shapely.geometry.Polygon(zip(x_positions, y_positions))
-	return int(pgon.area) + total_length // 2 + 1
+	area = shoelace(points)
+	return int(area - total_length / 2 + 1) + total_length
 
 
 def aoc(data: str, prefix: str) -> None:
