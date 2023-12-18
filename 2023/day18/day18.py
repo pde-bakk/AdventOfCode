@@ -37,8 +37,7 @@ def solve(lines: list[str], part2: bool) -> int:
 		total_length += dist
 		points.append(pos)
 
-	area = shoelace(points)
-	return int(area - total_length / 2 + 1) + total_length
+	return shoelace(points) + total_length // 2 + 1
 
 
 def aoc(data: str, prefix: str) -> None:
