@@ -41,17 +41,14 @@ class AocRange:
 
 def parse_line(line: str) -> dict[str, int]:
 	items = line[1:-1].split(',')
-	items2 = {part[0]: int(part[2:]) for part in items}
-	print(items2)
-	return items2
+	return {part[0]: int(part[2:]) for part in items}
 
 
 def get_from_dict(wd: dict, key: str, line: dict[str, int]):
 	*checks, last = wd[key]
 	for (check, result) in checks:
 		letter = check[0]
-		new_check = str(line[letter]) + check[1:]
-		if eval(new_check):
+		if f'{line[letter]}{check[1:]}':
 			if result in 'RA':
 				return result
 			else:
@@ -110,8 +107,7 @@ def aoc(data: str, prefix: str) -> None:
 	for workflow in workflows:
 		name, rest = workflow.removesuffix('}').split('{', maxsplit=1)
 		rest = rest.split(',')
-		r = [tuple(i.split(':')) if ':' in i else i for i in rest]
-		wd[name] = r
+		wd[name] = [tuple(i.split(':')) if ':' in i else i for i in rest]
 	part1 = solve(wd, other)
 	part2 = solve2(wd)
 	print(f'{prefix} part 1: {part1}')
