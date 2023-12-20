@@ -18,7 +18,9 @@ def solve(d: dict[str, str, int, list[str,]]) -> tuple[int, int]:
 		for conj in conjunctions:
 			if conj in modules:
 				conjunctions[conj][key] = 0
-	targets = list(conjunctions['dg'])
+
+	backtrack = [key for key, (_, _, modules) in d.items() if modules == ['rx']][0]
+	targets = conjunctions[backtrack]
 	targets_d = {target: 0 for target in targets}
 	pulses = [0, 0]
 	for i in range(1, 7001):
