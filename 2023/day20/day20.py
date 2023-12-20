@@ -1,4 +1,3 @@
-import functools
 import sys
 import math
 
@@ -19,8 +18,6 @@ def solve(d: dict[str, str, int, list[str,]]) -> tuple[int, int]:
 		for conj in conjunctions:
 			if conj in modules:
 				conjunctions[conj][key] = 0
-		# print(f'{key=}, {modules=}')
-	# print(f'{conjunctions=}')
 	targets = list(conjunctions['dg'])
 	targets_d = {target: 0 for target in targets}
 	pulses = [0, 0]
@@ -55,19 +52,16 @@ def solve(d: dict[str, str, int, list[str,]]) -> tuple[int, int]:
 							# print_details(key, button_state, mod)
 				case '&':
 					button_conjunctions = conjunctions[key]
-					# print(f'{key=}, {button_conjunctions=}')
 					new_pulse = int(not all(button_conjunctions.values()))
 					for mod in modules:
-						# new_pulse = int(not pulse)
 						if mod in targets and targets_d[mod] == 0 and new_pulse == 0:
 							targets_d[mod] = i
-							print(f'{key=}, {mod=}, {new_pulse=}')
 						q += (mod, new_pulse),
 						new_pulses[new_pulse] += 1
 						if mod in conjunctions:
 							conjunctions[mod][key] = new_pulse
 						# print_details(key, new_pulse, mod)
-		if i < 1000:
+		if i < 1001:
 			pulses[0] += new_pulses[0]
 			pulses[1] += new_pulses[1]
 	return math.prod(pulses), math.lcm(*targets_d.values())
@@ -83,7 +77,6 @@ def parse(lines: list[str]):
 			operator = name[0]
 			name = name[1:]
 		result[name] = [operator, 0, modules]
-		# print(f'for {line}, d[{name}] = {result[name]}')
 	return result
 
 
