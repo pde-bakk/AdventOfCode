@@ -22,7 +22,7 @@ def print_map_with_distances(grid: list[str], new_q: set) -> None:
 	print(end='\n')
 
 
-def bfs(grid: list[str], target_distance: int, part2: bool=False) -> int:
+def bfs(grid: list[str], target_distance: int, part2: bool = False) -> int | list[int]:
 	height, width = len(grid), len(grid[0])
 	obstacles = set([Position(y, x) for y in range(height) for x in range(width) if grid[y][x] == '#'])
 	start = [Position(y, x) for y in range(height) for x in range(width) if grid[y][x] == 'S'][0]
@@ -53,6 +53,7 @@ def solve2(nbs: list[int]):
 		for item1, item2 in zip(x, x[1:]):
 			result.append(item2 - item1)
 		return result
+
 	max_steps = 26501365
 	nth_term = (max_steps - 65) // 131 + 1
 	n = nth_term
@@ -61,18 +62,14 @@ def solve2(nbs: list[int]):
 	a = second_diffs[0] // 2
 	b = first_diffs[0] - 3 * a
 	c = nbs[0] - b - a
-	return a*n**2 + b*n + c
+	return a * n ** 2 + b * n + c
 
 
 def aoc(data: str, prefix: str) -> None:
-	total = 26501365
-	map_width = 131
-	print((total - 65) // map_width)
 	lines = split_data_on_newlines(data)
 	part1 = bfs(lines, 65)
 	print(f'{prefix} part 1: {part1}')
 	part2 = bfs(lines, target_distance=65 + 131 * 2, part2=True)
-	print(f'{part2=}')
 	print(f'{prefix} part 2: {solve2(part2)}')
 
 
