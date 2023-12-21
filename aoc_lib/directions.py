@@ -43,6 +43,16 @@ class Position:
 	def __repr__(self):
 		return str(self)
 
+	def __eq__(self, other):
+		if not isinstance(other, Position):
+			return NotImplemented
+		return (self.y, self.x) == (other.y, other.x)
+
+	def __hash__(self):
+		return hash((self.y, self.x))
+		# return self.y, self.x
+
+
 
 NORTH = Position(-1, 0)
 SOUTH = Position(1, 0)

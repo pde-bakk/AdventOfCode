@@ -8,6 +8,7 @@ from aoc_lib.get_input import get_input_file, get_example_file
 from aoc_lib.utilities import *
 from aoc_lib.extra_input_utils import *
 from aoc_lib.directions import *
+from aoc_lib.shoelace import shoelace
 
 
 def parse_line(line: str) -> tuple[str, int, int]:
@@ -20,13 +21,6 @@ def parse_line2(line: str) -> tuple[str, int, int]:
 	return 'RDLU'[int(c[-2])], int(c[2:-2], 16), 0
 
 
-def shoelace(points: list[Position]) -> int:
-	area = 0
-	for a, b in zip(points, points[1:]):
-		area += (b.x + a.x) * (b.y - a.y)
-	return abs(area) // 2
-
-
 def solve(lines: list[str], part2: bool) -> int:
 	pos = Position(0, 0)
 	points = []
@@ -37,7 +31,7 @@ def solve(lines: list[str], part2: bool) -> int:
 		total_length += dist
 		points.append(pos)
 
-	return shoelace(points) + total_length // 2 + 1
+	return shoelace(points, include_line=True)
 
 
 def aoc(data: str, prefix: str) -> None:
