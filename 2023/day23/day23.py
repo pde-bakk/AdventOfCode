@@ -30,42 +30,41 @@ def new_bfs(edges, lines):
 	width, height = len(lines[0]), len(lines)
 	start = Position(0, lines[0].index('.'))
 	goal = Position(height - 1, lines[-1].index('.'))
-	q = [(start, 0)]
-	seen = set()
+	q = [(start, 0, set())]
 	routes = []
 	while q:
-		pos, dist = q.pop()
-		if dist == -1:
-			seen.remove(pos)
-			continue
+		pos, dist, route = q.pop()
 		if pos == goal:
 			routes.append(dist)
 			continue
-		if pos in seen:
-			continue
-		seen.add(pos)
-		q.append((pos, -1))
 		for n, nd in edges[pos]:
-			q.append((n, dist + nd))
+			if pos not in route:
+				new_node = (n, dist + nd, route | {pos})
+				q.append(new_node)
 	return max(routes)
 
 
-def setup_edges(lines: list[str]):
+def setup_edges(lines: list[str], part2: bool):
 	width, height = len(lines[0]), len(lines)
 	start = Position(0, lines[0].index('.'))
-	goal = Position(height - 1, lines[-1].index('.'))
 	edges = {}
 	for y in range(height):
 		for x in range(width):
 			pos = Position(y, x)
+			tile = lines[y][x]
 			if lines[y][x] == '#':
 				continue
-			for n in pos.get_neighbours():
-				if not (0 <= n.y < height and 0 <= n.x < width):
-					continue
-				if lines[n.y][n.x] != '#':
-					edges[pos] = edges.get(pos, set()) | {(n, 1)}
-					edges[n] = edges.get(n, set()) | {(pos, 1)}
+			if not part2 and tile in '><v^':
+				n = pos + slopes[tile]
+				edges[pos] = edges.get(pos, set()) | {(n, 1)}
+				# edges[n] = edges.get(n, set()) | {(pos, 1)}
+			else:
+				for n in pos.get_neighbours():
+					if not (0 <= n.y < height and 0 <= n.x < width):
+						continue
+					if lines[n.y][n.x] != '#':
+						edges[pos] = edges.get(pos, set()) | {(n, 1)}
+						edges[n] = edges.get(n, set()) | {(pos, 1)}
 	while True:
 		for node, edg in edges.items():
 			if len(edg) == 2:
@@ -83,7 +82,7 @@ def setup_edges(lines: list[str]):
 				break
 		else:
 			break
-	print(new_bfs(edges, lines))
+	return edges
 
 
 def bfs(lines: list[str]) -> int:
@@ -98,10 +97,10 @@ def bfs(lines: list[str]) -> int:
 		if node == goal:
 			routes.append(len(seen))
 			continue
-		# elif tile in slopes:
-		# 	n = node + slopes[tile]
-		# 	if n not in seen and lines[n.y][n.x] != '#':
-		# 		q.append((n, seen | {n}))
+		elif tile in slopes:
+			n = node + slopes[tile]
+			if n not in seen and lines[n.y][n.x] != '#':
+				q.append((n, seen | {n}))
 		elif tile != '#':
 			for n in node.get_neighbours():
 				if n not in seen and lines[n.y][n.x] != '#':
@@ -112,13 +111,13 @@ def bfs(lines: list[str]) -> int:
 
 def aoc(data: str, prefix: str) -> None:
 	lines = split_data_on_newlines(data)
-	# part1 = bfs(lines)
-	part2 = 0
-	setup_edges(lines)
-	# print(f'{prefix} part 1: {part1}')
+	part1 = bfs(lines)
+	print(f'{prefix} part 1: {part1}')
+	edges = setup_edges(lines, part2=True)
+	part2 = new_bfs(edges, lines)
 	print(f'{prefix} part 2: {part2}')
 
 
 if __name__ == '__main__':
 	aoc(get_example_file(), 'Example')
-	# aoc(get_input_file(), 'Solution')
+	aoc(get_input_file(), 'Solution')
