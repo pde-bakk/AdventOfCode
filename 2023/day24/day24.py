@@ -30,29 +30,32 @@ def get_slope(h: Hail) -> float:
 
 
 def get_intersection(a: Hail, b: Hail):
-	c = a.dx * b.dy - b.dx * a.dy
-	# print(f'c={c}, want {a.dx * b.dy} - {b.dx * a.dy}')
-	if c < 0.01:
-		# No Intersection
-		return None
-	# wa = a.x * (a.y + a.dy) - a.y * (a.x + a.dx)
-	# wb = b.x * (b.y + b.dy) - b.y * (b.x + b.dx)
+	# c = a.dx * b.dy - b.dx * a.dy
+	# # print(f'c={c}, want {a.dx * b.dy} - {b.dx * a.dy}')
+	# if c < 0.01:
+	# 	# No Intersection
+	# 	return None
+	# wa = a.y * (a.x + a.dx) - a.x * (a.y + a.dy)
+	# wb = b.y * (b.x + b.dx) - b.x * (b.y + b.dy)
 	# x = (wa * b.dx - wb * a.dx) / c
 	# y = (wa * b.dy - wb * a.dy) / c
-	wa = a.y * (a.x + a.dx) - a.x * (a.y + a.dy)
-	wb = b.y * (b.x + b.dx) - b.x * (b.y + b.dy)
-	x = (wa * b.dx - wb * a.dx) / c
-	y = (wa * b.dy - wb * a.dy) / c
-	# x = dx * t + x0
-	# (x - x0) = dx * t
-	# t = (x - x0) / dx
-	t1 = (x - a.x) / a.dx
-	t2 = (x - b.x) / b.dx
-	print(f'{t1=}, {t2=}')
-	if t1 <= 0 or t2 <= 0:
-		# Not in the future
+	# in_future = ((x - a.x) > 0) == (a.dx > 0) and ((x - b.x) > 0) == (b.dx > 0)
+	# return in_future, x, y
+
+	slope_a, slope_b = get_slope(a), get_slope(b)
+	if math.isclose(slope_a, slope_b):
 		return None
-	return x, y
+	ayi = a.y - slope_a * a.x
+	byi = b.y - slope_b * b.x
+	x = (byi - ayi) / (slope_a - slope_b)
+	y = slope_a * (byi - ayi) / (slope_a - slope_b) + ayi
+
+	in_future = True
+	for c in [a,b]:
+		dx, dy = x - c.x, y - c.y
+		if (dx > 0) != (c.dx > 0) or (dy > 0) != (c.dy > 0):
+			in_future = False
+	return in_future, x, y
 
 
 def solve(lines: list[Hail], test_area: tuple[int, int]) -> int:
@@ -61,15 +64,18 @@ def solve(lines: list[Hail], test_area: tuple[int, int]) -> int:
 	counts = 0
 	for i, a in enumerate(lines):
 		for i2, b in enumerate(lines[i + 1:]):
-			print(f'{a=}')
-			print(f'{b=}')
 			intersection = get_intersection(a, b)
+			print(f'{a=}, {b=}')
 			if intersection:
-				x, y = intersection
-				print(f'Intersection is at {x=}, {y=}')
-				if tmin <= x <= tmax and tmin <= y <= tmax:
+				in_future, x, y = intersection
+				within_bounds = (tmin <= x <= tmax and tmin <= y <= tmax)
+				print(f'Intersection will be {["outside", "inside"][within_bounds]} bounds at {x=}, {y=}, {in_future=}')
+				if in_future and within_bounds:
 					counts += 1
-					print(f'Intersection is within the bounds')
+					# print(f'Intersection is within the bounds')
+			else:
+				print('No intersection')
+			print()
 	return counts
 
 
