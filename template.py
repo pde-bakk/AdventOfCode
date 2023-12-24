@@ -8,6 +8,11 @@ from aoc_lib.extra_input_utils import *
 from aoc_lib.directions import *
 
 
+def parse(data: str) -> list[str]:
+	lines = split_data_on_newlines(data)
+	return lines
+
+
 def solve(lines: list[str]) -> int:
 	return 0
 
