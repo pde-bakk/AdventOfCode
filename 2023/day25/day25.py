@@ -14,21 +14,20 @@ from aoc_lib.directions import *
 def parse(data: str) -> nx.Graph:
 	g = nx.Graph()
 	for line in split_data_on_newlines(data):
-		print(line)
 		name, *components = line.replace(':', '').split()
 		g.add_node(name)
 		for comp in components:
 			g.add_node(comp)
-			if sorted([name, comp]) not in [['rpd', 'ttj'], ['htp', 'vps'], ['dgc', 'fqn']]:
-				g.add_edge(name, comp)
-				g.add_edge(comp, name)
+			g.add_edge(name, comp)
 	return g
 
 
 def solve(g: nx.Graph) -> int:
-	nx.draw(g, with_labels=True)
+	# nx.draw(g, with_labels=True)
 	# plt.show()
-	return math.prod([len(g.subgraph(c)) for c in nx.connected_components(g)])
+	g.remove_edges_from(nx.minimum_edge_cut(g))
+	lengths = [len(subgraph) for subgraph in nx.connected_components(g)]
+	return math.prod(lengths)
 
 
 def aoc(data: str, prefix: str) -> None:
@@ -38,5 +37,5 @@ def aoc(data: str, prefix: str) -> None:
 
 
 if __name__ == '__main__':
-	# aoc(get_example_file(), 'Example')
+	aoc(get_example_file(), 'Example')
 	aoc(get_input_file(), 'Solution')
