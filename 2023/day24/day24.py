@@ -1,5 +1,6 @@
 import sys
 import math
+import z3
 
 from collections import namedtuple
 
@@ -58,32 +59,41 @@ def get_intersection(a: Hail, b: Hail):
 	return in_future, x, y
 
 
-def solve(lines: list[Hail], test_area: tuple[int, int]) -> int:
+def solve_part1(lines: list[Hail], test_area: tuple[int, int]) -> int:
 	tmin, tmax = test_area
 	# a, b, *rest = lines
 	counts = 0
 	for i, a in enumerate(lines):
 		for i2, b in enumerate(lines[i + 1:]):
 			intersection = get_intersection(a, b)
-			print(f'{a=}, {b=}')
+			# print(f'{a=}, {b=}')
 			if intersection:
 				in_future, x, y = intersection
 				within_bounds = (tmin <= x <= tmax and tmin <= y <= tmax)
-				print(f'Intersection will be {["outside", "inside"][within_bounds]} bounds at {x=}, {y=}, {in_future=}')
+				# print(f'Intersection will be {["outside", "inside"][within_bounds]} bounds at {x=}, {y=}, {in_future=}')
 				if in_future and within_bounds:
 					counts += 1
 					# print(f'Intersection is within the bounds')
-			else:
-				print('No intersection')
-			print()
 	return counts
+
+
+def solve_part2(lines: list[Hail]):
+	xr, yr, zr, dxr, dyr, dzr = z3.Reals("xr yr zr dxr dyr dzr")
+	solver = z3.Solver()
+	for i, hailstone in enumerate(lines):
+		ti = z3.Real(f't{i}')
+		solver.add(ti > 0)
+		solver.add(xr + ti * dxr == hailstone.x + ti * hailstone.dx)
+		solver.add(yr + ti * dyr == hailstone.y + ti * hailstone.dy)
+		solver.add(zr + ti * dzr == hailstone.z + ti * hailstone.dz)
+	solver.check()
+	return sum(solver.model()[pos].as_long() for pos in [xr, yr, zr])
 
 
 def aoc(data: str, prefix: str, test_area) -> None:
 	lines = parse(data)
-	# Higher than 15344
-	part1 = solve(lines, test_area)
-	part2 = 0
+	part1 = solve_part1(lines, test_area)
+	part2 = solve_part2(lines)
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')
 
