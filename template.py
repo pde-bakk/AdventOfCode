@@ -18,7 +18,7 @@ def solve(lines: list[str]) -> int:
 
 
 def aoc(data: str, prefix: str) -> None:
-	lines = split_data_on_newlines(data)
+	lines = parse(data)
 	part1 = 0
 	part2 = 0
 	print(f'{prefix} part 1: {part1}')
