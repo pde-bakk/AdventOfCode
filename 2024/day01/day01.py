@@ -12,7 +12,6 @@ def parse(data: str) -> tuple[list[int], list[int]]:
 	lines = split_data_on_newlines(data)
 	l1 = []
 	l2 = []
-	print(list(map(str.split, lines)))
 	for a, b in map(str.split, lines):
 		l1.append(int(a))
 		l2.append(int(b))
