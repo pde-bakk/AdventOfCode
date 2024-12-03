@@ -13,14 +13,17 @@ def parse(data: str) -> list[str]:
 	return lines
 
 
-def solve(lines: list[str]) -> int:
+def solve_part1(lines: list[str]) -> int:
+	return 0
+
+def solve_part2(lines: list[str]) -> int:
 	return 0
 
 
 def aoc(data: str, prefix: str) -> None:
 	lines = parse(data)
-	part1 = 0
-	part2 = 0
+	part1 = solve_part1(lines)
+	part2 = solve_part2(lines)
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')
 
