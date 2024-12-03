@@ -35,9 +35,7 @@ def solve2(data: str) -> int:
 	return total
 
 
-
 def aoc(data: str, prefix: str) -> None:
-	# lines = parse(data)
 	part1 = solve(data)
 	part2 = solve2(data)
 	print(f'{prefix} part 1: {part1}')
