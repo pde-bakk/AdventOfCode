@@ -37,6 +37,9 @@ class Position:
 			for direction in [NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST]:
 				yield self + direction
 
+	def isvalid(self, len_y: int, len_x: int):
+		return 0 <= self.y < len_y and 0 <= self.x < len_x
+
 	def __str__(self) -> str:
 		return f'Position(y={self.y}, x={self.x})'
 
