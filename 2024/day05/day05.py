@@ -1,5 +1,5 @@
 import sys
-from typing import Tuple
+from typing import *
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
@@ -7,7 +7,7 @@ from aoc_lib.utilities import *
 from aoc_lib.extra_input_utils import *
 
 
-def parse(data: str) -> Tuple[dict[int,set[int]], list[list[int]]]:
+def parse(data: str) -> Tuple[Dict[int, Set[int]], List[List[int]]]:
 	l1, l2 = split_on_double_newlines(data)
 	l1 = [ints(line) for line in l1]
 	l2 = [ints(line) for line in l2]
@@ -16,7 +16,7 @@ def parse(data: str) -> Tuple[dict[int,set[int]], list[list[int]]]:
 		rules[a] = rules.get(a, set()) | {b}
 	return rules, l2
 
-def is_ordered(rules, update: list[int]) -> bool:
+def is_ordered(rules, update: List[int]) -> bool:
 	for idx, item in enumerate(update):
 		if item not in rules:
 			continue
@@ -25,7 +25,7 @@ def is_ordered(rules, update: list[int]) -> bool:
 				return False
 	return True
 
-def fix_update(rules, update: list[int]) -> list[int]:
+def fix_update(rules, update: List[int]) -> List[int]:
 	go_again = True
 	while go_again:
 		go_again = False
@@ -40,7 +40,7 @@ def fix_update(rules, update: list[int]) -> list[int]:
 					go_again = True
 	return update
 
-def solve_part1(rules: dict[int,set[int]], updates: list[list[int]]) -> tuple[int, int]:
+def solve_part1(rules: Dict[int, Set[int]], updates: List[List[int]]) -> Tuple[int, int]:
 	p1, p2 = 0, 0
 	for update in updates:
 		if is_ordered(rules, update):
