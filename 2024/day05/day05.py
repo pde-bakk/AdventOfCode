@@ -35,7 +35,6 @@ def fix_update(rules, update: List[int]) -> List[int]:
 			for item2 in rules[item]:
 				if item2 in update and update.index(item2) < idx:
 					idx2 = update.index(item2)
-					# update.insert(idx2, )
 					update[idx], update[idx2] = update[idx2], update[idx]
 					go_again = True
 	return update
@@ -48,7 +47,6 @@ def solve_part1(rules: Dict[int, Set[int]], updates: List[List[int]]) -> Tuple[i
 		else:
 			update2 = fix_update(rules, update)
 			p2 += update[len(update2) // 2]
-
 	return p1, p2
 
 
