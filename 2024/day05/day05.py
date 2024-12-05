@@ -11,17 +11,14 @@ from aoc_lib.directions import *
 
 def parse(data: str) -> Tuple[dict[int,set[int]], list[list[int]]]:
 	l1, l2 = split_on_double_newlines(data)
-	l1 = [tuple(map(int, line.split('|'))) for line in l1]
+	l1 = [ints(line) for line in l1]
+	l2 = [ints(line) for line in l2]
 	rules = {}
 	for a, b in l1:
-		if a not in rules:
-			rules[a] = set()
-		rules[a].add(b)
-
-	l2 = [list(map(int, line.split(','))) for line in l2]
+		rules[a] = rules.get(a, set()) | {b}
 	return rules, l2
 
-def check(rules, update: list[int]) -> bool:
+def is_ordered(rules, update: list[int]) -> bool:
 	for idx, item in enumerate(update):
 		if item not in rules:
 			continue
@@ -30,7 +27,7 @@ def check(rules, update: list[int]) -> bool:
 				return False
 	return True
 
-def fix(rules, update: list[int]) -> list[int]:
+def fix_update(rules, update: list[int]) -> list[int]:
 	go_again = True
 	while go_again:
 		go_again = False
@@ -46,27 +43,20 @@ def fix(rules, update: list[int]) -> list[int]:
 	return update
 
 def solve_part1(rules: dict[int,set[int]], updates: list[list[int]]) -> tuple[int, int]:
-	total = 0
-	total2 = 0
+	p1, p2 = 0, 0
 	for update in updates:
-		if check(rules, update):
-			total += update[len(update) // 2]
-			# print(f'{update} in right order')
+		if is_ordered(rules, update):
+			p1 += update[len(update) // 2]
 		else:
-			update2 = fix(rules, update)
-			total2 += update[len(update2) // 2]
-			print(f'{update} became {update2}')
+			update2 = fix_update(rules, update)
+			p2 += update[len(update2) // 2]
 
-	return total, total2
-
-def solve_part2(a, b) -> int:
-	return 0
+	return p1, p2
 
 
 def aoc(data: str, prefix: str) -> None:
 	a, b = parse(data)
 	part1, part2 = solve_part1(a, b)
-	# part2 = solve_part2(a, b)
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')
 
