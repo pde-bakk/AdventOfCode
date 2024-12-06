@@ -12,11 +12,6 @@ class Position:
 			return NotImplemented
 		return Position(self.y + other.y, self.x + other.x)
 
-	def __mul__(self, other):
-		if not isinstance(other, int):
-			return NotImplemented
-		return Position(self.y * other, self.x * other)
-
 	def __lt__(self, other):
 		if not isinstance(other, Position):
 			return NotImplemented
@@ -41,10 +36,10 @@ class Position:
 		return 0 <= self.y < len_y and 0 <= self.x < len_x
 
 	def __str__(self) -> str:
-		return f'Position(y={self.y}, x={self.x})'
+		return f'Pos(y={self.y}, x={self.x})'
 
 	def __repr__(self):
-		return str(self)
+		return f'Position(y={self.y}, x={self.x})'
 
 	def __eq__(self, other):
 		if not isinstance(other, Position):
@@ -56,22 +51,47 @@ class Position:
 		# return self.y, self.x
 
 
+class Direction(Position):
+	def __init__(self, y: int, x: int):
+		super().__init__(y, x)
+		assert abs(y) <= 1 and abs(x) <= 1
 
-NORTH = Position(-1, 0)
-SOUTH = Position(1, 0)
-EAST = Position(0, 1)
-WEST = Position(0, -1)
-NORTHWEST = Position(-1, -1)
-NORTHEAST = Position(-1, 1)
-SOUTHWEST = Position(1, -1)
-SOUTHEAST = Position(1, 1)
+	@staticmethod
+	def get_directions(diagonal: bool = False) -> list['Direction']:
+		directions = [SOUTH, NORTH, EAST, WEST]
+		if diagonal:
+			directions.extend([NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST])
+		return directions
 
+	def __str__(self) -> str:
+		return f'Dir(y={self.y}, x={self.x})'
 
-# def get_directions(diagonal: bool = False) -> list[tuple[int, int]]:
-# 	directions = [SOUTH, NORTH, EAST, WEST]
-# 	if diagonal:
-# 		directions.extend([NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST])
-# 	return directions
+	def __repr__(self):
+		return f'(y={self.y}, x={self.x})'
+
+	def __mul__(self, other):
+		if not isinstance(other, int):
+			return NotImplemented
+		return Position(self.y * other, self.x * other)
+
+	def turn_right(self) -> 'Direction':
+		directions = [WEST, SOUTH, EAST, NORTH]
+		assert self in directions
+		return directions[directions.index(self) - 1]
+
+	def turn_left(self) -> 'Direction':
+		directions = [NORTH, EAST, SOUTH, WEST]
+		assert self in directions
+		return directions[directions.index(self) - 1]
+
+NORTH = Direction(-1, 0)
+SOUTH = Direction(1, 0)
+EAST = Direction(0, 1)
+WEST = Direction(0, -1)
+NORTHWEST = Direction(-1, -1)
+NORTHEAST = Direction(-1, 1)
+SOUTHWEST = Direction(1, -1)
+SOUTHEAST = Direction(1, 1)
 
 
 # def get_direction_(direction: str) -> tuple[int, int]:
@@ -87,20 +107,3 @@ SOUTHEAST = Position(1, 1)
 # 	}
 # 	return directions[direction.lower()]
 
-
-# def yield_directions(diagonal: bool = False) -> tuple[int, int]:
-# 	for direction in get_directions(diagonal=diagonal):
-# 		yield direction
-#
-#
-# def add_directions(a: tuple[int, int], b: tuple[int, int]):
-# 	return a[0] + b[0], a[1] + b[1]
-#
-#
-# def get_neighbours(y: int, x: int, diagonal: bool = False) -> list[tuple[int, int]]:
-# 	return [(y + d[0], x + d[1]) for d in get_directions(diagonal=diagonal)]
-#
-#
-# def yield_neighbours(y: int, x: int, diagonal: bool = False) -> tuple[int, int]:
-# 	for n in get_neighbours(y, x, diagonal):
-# 		yield n
