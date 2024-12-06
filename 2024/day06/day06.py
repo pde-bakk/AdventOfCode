@@ -1,6 +1,7 @@
 import sys
 import math
 from copy import copy
+from typing import List, Set
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
@@ -37,24 +38,21 @@ def print_map(lines: list[str], path: list[Position], time_paradoxes: set[Positi
 	print('\n')
 
 
-def get_path(lines: list[str]):
+def get_path(lines: list[str]) -> Set[Position]:
 	seen = set()
 	pos = [Position(y, line.index('^')) for y, line in enumerate(lines) if ('^' in line)][0]
-	path: list[Position] = [pos]
+	# path: list[Position] = [pos]
 	direction = NORTH
-	seen.add((pos, direction))
-	time_paradoxes = set()
+	seen.add(pos)
 	while pos.isvalid(len(lines), len(lines[0])):
 		if obstacle_in_front(pos, direction, lines):
 			direction = direction.turn_right()
-		if not obstacle_in_front(pos, direction, lines) and (pos, direction.turn_right()) in seen:
-			time_paradoxes.add(pos + direction)
-			print(f'Added {pos + direction}')
-		seen.add((pos, direction))
 		pos += direction
-		path.append(pos)
-		print_map(lines, path, time_paradoxes)
-	return set(path), time_paradoxes
+		if pos.isvalid(len(lines), len(lines[0])):
+			seen.add(pos)
+		# path.append(pos)
+		# print_map(lines, path, time_paradoxes)
+	return seen
 
 def detect_cycle(lines: list[str], extra_obstacle: Position, startpos: Position):
 	pos = copy(startpos)
@@ -62,12 +60,8 @@ def detect_cycle(lines: list[str], extra_obstacle: Position, startpos: Position)
 	direction = NORTH
 	seen.add((pos, direction))
 	while pos.isvalid(len(lines), len(lines[0])):
-		if obstacle_in_front(pos, direction, lines, extra_obstacle):
+		while obstacle_in_front(pos, direction, lines, extra_obstacle):
 			direction = direction.turn_right()
-		# if (pos, right) in seen and pos != startpos:
-		# 	time_paradoxes.add(pos + direction)
-		# 	print(f'{pos, right} in seen ({direction=}), added {pos + direction} to time paradoxes')
-		# 	print_map(lines, time_paradoxes)
 
 		pos += direction
 		if (pos, direction) in seen:
@@ -81,7 +75,8 @@ def solve_part2(lines: list[str], path: set[Position]):
 	time_paradoxes = set()
 	startpos = [Position(y, line.index('^')) for y, line in enumerate(lines) if ('^' in line)][0]
 	path.remove(startpos)
-	for p in path:
+	for i, p in enumerate(path):
+		print(f'{i / len(path) * 100:.1f}%', end='\r')
 		if detect_cycle(lines, p, startpos):
 			time_paradoxes.add(p)
 	return len(time_paradoxes)
@@ -89,12 +84,12 @@ def solve_part2(lines: list[str], path: set[Position]):
 
 def aoc(data: str, prefix: str) -> None:
 	lines = parse(data)
-	path, paradoxes = get_path(lines)
+	path = get_path(lines)
 	print(f'{prefix} part 1: {len(path)}')
-	# part2 = solve_part2(lines, path)
-	print(f'{prefix} part 2: {len(paradoxes)}')
+	part2 = solve_part2(lines, path)
+	print(f'{prefix} part 2: {part2}')
 
 
 if __name__ == '__main__':
 	aoc(get_example_file(), 'Example')
-	# aoc(get_input_file(), 'Solution')
+	aoc(get_input_file(), 'Solution')
