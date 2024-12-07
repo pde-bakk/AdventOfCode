@@ -14,10 +14,12 @@ def parse(data: str) -> list[str]:
 
 
 def solve_part1(lines: list[str]) -> int:
-	return 0
+	result = 0
+	return result
 
 def solve_part2(lines: list[str]) -> int:
-	return 0
+	result = 0
+	return result
 
 
 def aoc(data: str, prefix: str) -> None:
