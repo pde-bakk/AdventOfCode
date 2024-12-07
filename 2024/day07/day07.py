@@ -23,13 +23,15 @@ def solve(l: list[int], ops: tuple[str, ...]) -> int:
 			total += item
 		elif op == '*':
 			total *= item
+		elif op == '|':
+			total = int(str(total) + str(item))
 	return total
 
 
 def solve_part1(lines: list[list[int]]) -> int:
 	total = 0
 	for result, *items in lines:
-		product = list(itertools.product('+*', repeat=len(items)-1))
+		product = list(itertools.product('+*|', repeat=len(items)-1))
 		for operators in product:
 			r2 = solve(items, operators)
 			if r2 == result:
@@ -51,4 +53,4 @@ def aoc(data: str, prefix: str) -> None:
 
 if __name__ == '__main__':
 	aoc(get_example_file(), 'Example')
-	# aoc(get_input_file(), 'Solution')
+	aoc(get_input_file(), 'Solution')
