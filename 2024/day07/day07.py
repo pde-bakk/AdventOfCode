@@ -28,25 +28,22 @@ def solve(l: list[int], ops: tuple[str, ...]) -> int:
 	return total
 
 
-def solve_part1(lines: list[list[int]]) -> int:
+def solve_day07(lines: list[list[int]], allowed_operators: str) -> int:
 	total = 0
 	for result, *items in lines:
-		product = list(itertools.product('+*|', repeat=len(items)-1))
+		product = list(itertools.product(allowed_operators, repeat=len(items)-1))
 		for operators in product:
 			r2 = solve(items, operators)
 			if r2 == result:
 				total += result
-				print(f'{result} = {r2}')
 				break
 	return total
 
-def solve_part2(lines: list[list[int]]) -> int:
-	return 0
 
 def aoc(data: str, prefix: str) -> None:
 	lines = parse(data)
-	part1 = solve_part1(lines)
-	part2 = solve_part2(lines)
+	part1 = solve_day07(lines, allowed_operators='+*')
+	part2 = solve_day07(lines, allowed_operators='+*|')
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')
 
