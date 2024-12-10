@@ -2,6 +2,7 @@ import copy
 import sys
 import math
 from collections import namedtuple
+from typing import Any
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
@@ -18,64 +19,38 @@ def parse(data: str) -> list[list[int]]:
 	return [list(map(int, line)) for line in lines]
 
 
-
-def astar2(lines: list[list[int]], start: Position) -> int:
+def dijkstra(lines: list[list[int]], start: Position) -> tuple[int, int]:
 	q = [[start]]
-	# seen = {start}
-	reachable: set = set()
-	max_value = 0
+	peaks: set[Position] = set()
+	routes: set[tuple[Position, ...]] = set()
 	while q:
 		nodeq = q.pop(0)
 		last = nodeq[-1]
 		value = lines[last.y][last.x]
 		if value == 9:
-			reachable.add(tuple(nodeq))
+			peaks.add(last)
+			routes.add(tuple(nodeq))
 		for nei in last.get_neighbours(diagonal=False):
 			if nei.isvalid(len(lines), len(lines[0])) and lines[nei.y][nei.x] == value + 1:
 				new_l = copy.deepcopy(nodeq)
 				new_l.append(nei)
 				q.append(new_l)
-				# seen.add(nei)
-	print(f'{reachable=}')
-	return len(reachable)
+	return len(peaks), len(routes)
 
 
-def astar(lines: list[list[int]], start: Position) -> int:
-	q = [Node(pos=start, length=0)]
-	seen = {start}
-	reachable = set()
-	while q:
-		node = q.pop(0)
-		value = lines[node.pos.y][node.pos.x]
-		if value == 9:
-			reachable.add(node.pos)
-		for nei in node.pos.get_neighbours(diagonal=False):
-			if nei not in seen and nei.isvalid(len(lines), len(lines[0])) and lines[nei.y][nei.x] == value + 1:
-				q.append(Node(pos=nei, length=node.length + 1))
-				seen.add(nei)
-	print(f'{reachable=}')
-	return len(reachable)
-
-def solve(lines: list[list[int]], part: int = 1) -> int:
-	trailheads = []
-	result = 0
-	for y, line in enumerate(lines):
-		for x, i in enumerate(line):
-			if i == 0:
-				trailheads.append(Position(y=y, x=x))
-	print(f'{trailheads=}')
+def solve(lines: list[list[int]]) -> tuple[int, int]:
+	trailheads = find_positions_where(grid=lines, target=0)
+	part1 = part2 = 0
 	for t in trailheads:
-		if part == 1:
-			result += astar(lines, t)
-		else:
-			result += astar2(lines, t)
-	return result
+		p1, p2 = dijkstra(lines, t)
+		part1 += p1
+		part2 += p2
+	return part1, part2
 
 
 def aoc(data: str, prefix: str) -> None:
 	lines = parse(data)
-	part1 = solve(lines, part=1)
-	part2 = solve(lines, part=2)
+	part1, part2 = solve(lines)
 	print(f'{prefix} part 1: {part1}')
 	print(f'{prefix} part 2: {part2}')
 
