@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Position:
 	def __init__(self, y: int, x: int):
 		if not isinstance(y, int) or not isinstance(x, int):
@@ -32,8 +35,11 @@ class Position:
 			for direction in [NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST]:
 				yield self + direction
 
-	def isvalid(self, len_y: int, len_x: int):
+	def isvalid(self, len_y: int, len_x: int) -> bool:
 		return 0 <= self.y < len_y and 0 <= self.x < len_x
+
+	def checkvalid(self, griddy: list[list[Any]]) -> bool:
+		return 0 <= self.y < len(griddy) and 0 <= self.x < len(griddy[0])
 
 	def __str__(self) -> str:
 		return f'Pos(y={self.y}, x={self.x})'
@@ -64,10 +70,17 @@ class Direction(Position):
 		return directions
 
 	def __str__(self) -> str:
-		return f'Dir(y={self.y}, x={self.x})'
+		dmap = {
+			NORTH: 'NORTH',
+			SOUTH: 'SOUTH',
+			WEST: 'WEST',
+			EAST: 'EAST',
+		}
+		return dmap[self]
 
 	def __repr__(self):
-		return f'(y={self.y}, x={self.x})'
+		return self.__str__()
+		# return f'Direction(y={self.y}, x={self.x})'
 
 	def __mul__(self, other):
 		if not isinstance(other, int):

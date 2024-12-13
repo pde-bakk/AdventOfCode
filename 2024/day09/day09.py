@@ -32,13 +32,18 @@ def parse(data: str) -> list[File]:
 	return l1
 
 
-def move(file_idx: int, l: list[File]) -> bool:
+def move(file_idx: int, l: list[File], part: int) -> bool:
 	file = l[file_idx]
 	for i, (a, b) in enumerate(zip(l, l[1:])):
-		if a.offset > file.offset:
+		new_offset = a.offset + a.size
+		if new_offset >= file.offset:
 			continue
 		available_space = b.offset - (a.offset + a.size)
-		if available_space >= file.size:
+		if part == 1:
+			threshold = 1
+		else:
+			threshold = file.size
+		if available_space >= threshold:
 			# new_size = min(available_space, file.size)
 			new_size = file.size
 			new_file = File(size=new_size, offset=a.offset + a.size, index=file.id)
@@ -65,30 +70,27 @@ def solve(l1: list[File], part: int = 1) -> int:
 	while fuck:
 		fuck = False
 		for file_idx in range(len(l1) - 1, 0, -1):
-			# print(f'{file_idx=}')
-			move(file_idx, l1)
-				# fuck = True
-				# break
-		# show(l1)
-		# break
-	# show(l1)
-	# print(l1)
+
+			if move(file_idx, l1, part=part):
+				fuck = True
+				break
+
+
 	result = []
 	for file in l1:
 		for i in range(file.offset, file.offset + file.size):
 			result.append(file.id * i)
-	# print(result)
 	return sum(result)
 
 
 def aoc(data: str, prefix: str) -> None:
 	lines = parse(data)
 	part1 = solve(lines, part=1)
-	# part2 = solve(lines, part=2)
 	print(f'{prefix} part 1: {part1}')
+	# part2 = solve(lines, part=2)
 	# print(f'{prefix} part 2: {part2}')
 
 
 if __name__ == '__main__':
 	aoc(get_example_file(), 'Example')
-	aoc(get_input_file(), 'Solution')
+	# aoc(get_input_file(), 'Solution')
