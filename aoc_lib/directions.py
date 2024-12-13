@@ -58,9 +58,10 @@ class Position:
 
 
 class Direction(Position):
-	def __init__(self, y: int, x: int):
+	def __init__(self, y: int, x: int, normalized: bool = False):
 		super().__init__(y, x)
-		assert abs(y) <= 1 and abs(x) <= 1
+		if normalized:
+			assert abs(y) <= 1 and abs(x) <= 1
 
 	@staticmethod
 	def get_directions(diagonal: bool = False) -> list['Direction']:
@@ -86,6 +87,12 @@ class Direction(Position):
 		if not isinstance(other, int):
 			return NotImplemented
 		return Position(self.y * other, self.x * other)
+
+	def __rmul__(self, other):
+		return self * other
+		# if not isinstance(other, int):
+		# 	return NotImplemented
+		# return self * other
 
 	def turn_right(self) -> 'Direction':
 		directions = [WEST, SOUTH, EAST, NORTH]
