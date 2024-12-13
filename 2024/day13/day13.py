@@ -42,7 +42,6 @@ def solve(machines: list[Machine], part: int = 1) -> int:
 			continue
 		if int(solution[0]) * m.button_a + int(solution[1]) * m.button_b == m.prize:
 			tokens = 3 * int(solution[0]) + int(solution[1])
-			# print(f'{tokens = }, {solution=}')
 			result += tokens
 	return result
 

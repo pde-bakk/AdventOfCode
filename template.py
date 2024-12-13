@@ -21,9 +21,9 @@ def solve(lines: list[str], part: int = 1) -> int:
 def aoc(data: str, prefix: str) -> None:
 	lines = parse(data)
 	part1 = solve(lines, part=1)
-	part2 = solve(lines, part=2)
 	print(f'{prefix} part 1: {part1}')
-	print(f'{prefix} part 2: {part2}')
+	# part2 = solve(lines, part=2)
+	# print(f'{prefix} part 2: {part2}')
 
 
 if __name__ == '__main__':
