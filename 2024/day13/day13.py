@@ -32,11 +32,11 @@ def parse(data: str) -> list[Machine]:
 
 
 def solve(machines: list[Machine], part: int = 1) -> int:
-	conversion_error = 10000000000000
+	conversion_error = 10_000_000_000_000
 	result = 0
 	for m in machines:
 		if part == 2:
-			m.prize += Direction(conversion_error, conversion_error)
+			m.prize += Direction(y=conversion_error, x=conversion_error)
 		solution = m.solve()
 		if any(x < 0 for x in solution):
 			continue
