@@ -1,3 +1,4 @@
+import typing
 from typing import Any
 
 
@@ -22,6 +23,11 @@ class Position:
 
 	def __iadd__(self, other):
 		return self + other
+
+	def index(self, grid: list[list | str]) -> Any:
+		if not isinstance(grid, list):
+			return NotImplemented
+		return grid[self.y][self.x]
 
 	def __sub__(self, other):
 		if not isinstance(other, Position):
@@ -104,6 +110,9 @@ class Direction(Position):
 		assert self in directions
 		return directions[directions.index(self) - 1]
 
+	def turn_around(self) -> 'Direction':
+		return Direction(y=self.y * - 1, x = self.x * -1)
+
 NORTH = Direction(-1, 0)
 SOUTH = Direction(1, 0)
 EAST = Direction(0, 1)
@@ -112,6 +121,15 @@ NORTHWEST = Direction(-1, -1)
 NORTHEAST = Direction(-1, 1)
 SOUTHWEST = Direction(1, -1)
 SOUTHEAST = Direction(1, 1)
+
+
+def ascii_to_direction(s: str) -> Direction:
+	return {
+		'^': NORTH,
+		'v': SOUTH,
+		'<': WEST,
+		'>': EAST,
+	}[s]
 
 
 # def get_direction_(direction: str) -> tuple[int, int]:

@@ -29,4 +29,4 @@ with open('input.txt', 'r') as f:
 print(f'Part 1:', int(get_item('root')))
 lhs, rhs = get_item_2("root")[1:-1].replace(' ', '').split('=')
 p2 = sympy.sympify(f'Eq({lhs}, {rhs})')
-print(f'Part 2:', sympy.solve(p2, sympy.Symbol('x')))
+print(f'Part 2:', sympy.p1(p2, sympy.Symbol('x')))

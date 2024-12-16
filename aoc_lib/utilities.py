@@ -46,7 +46,7 @@ def concatenate_ints(a: int, b: int) -> int:
 	# Could do it with int(str(a) + str(b)), but that is slow
 	return a * 10 * math.ceil(math.log10(b + 1)) + b
 
-def find_positions_where(grid: list[list[Any]], target: Any) -> list[Position]:
+def find_positions_where(grid: list[list | str], target: Any) -> list[Position]:
 	return [
 		Position(y=y, x=x)
 		for y, row in enumerate(grid)
