@@ -1,5 +1,6 @@
 import gzip
 import itertools
+import os
 import sys
 import math
 from copy import deepcopy, copy
@@ -35,13 +36,7 @@ def create_robot_dict(robots: list[Robot]) -> dict[Position, int]:
 def print_map(robot_dict: dict[Position, int], max_height: int, max_width: int) -> str:
 	s = ''
 	for y in range(max_height):
-		# if map_to_binary(y, max_height) == 1:
-		# 	s += '\n'
-		# 	continue
 		for x in range(max_width):
-			# if map_to_binary(x, max_width) == 1:
-			# 	s += ' '
-			# else:
 			s += str(robot_dict.get(Position(y=y, x=x), '.'))
 		s += '\n'
 	return s + '\n'
@@ -91,7 +86,6 @@ def p2(robots: list[Robot], max_height: int, max_width: int) -> int:
 			if x < smallest[1]:
 				smallest = (iteration, x)
 				print(f'So far, iteration {iteration * offset} is the smallest with compressed size of {x}')
-				# print(f'robots_{i} gzipped has size {len(x)}')
 			with open(f'/tmp/robots/{iteration}', 'w') as f:
 				f.write(f'gzipped encoded this has size: {x}\n\n')
 				f.write(gridmap)
@@ -101,6 +95,7 @@ def p2(robots: list[Robot], max_height: int, max_width: int) -> int:
 
 
 def aoc(data: str, prefix: str, max_height: int, max_width: int) -> None:
+	os.mkdir('/tmp/robots/')
 	lines = parse(data)
 	part1 = p1(lines, max_height, max_width)
 	print(f'{prefix} part 1: {part1}')
@@ -109,5 +104,5 @@ def aoc(data: str, prefix: str, max_height: int, max_width: int) -> None:
 
 
 if __name__ == '__main__':
-	# aoc(get_example_file(), 'Example', max_height=7, max_width=11)
+	aoc(get_example_file(), 'Example', max_height=7, max_width=11)
 	aoc(get_input_file(), 'Solution', max_height=103, max_width=101)
