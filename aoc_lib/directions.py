@@ -62,6 +62,11 @@ class Position:
 		return hash((self.y, self.x))
 		# return self.y, self.x
 
+	def distance_to(self, other) -> int:
+		if not isinstance(other, Position):
+			return NotImplemented
+		return abs(self.y - other.y) + abs(self.x - other.x)
+
 
 class Direction(Position):
 	def __init__(self, y: int, x: int, normalized: bool = False):
