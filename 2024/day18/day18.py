@@ -65,4 +65,4 @@ def aoc(data: str, prefix: str, end_pos: Position, amount_falling_bytes: int) ->
 
 if __name__ == '__main__':
 	aoc(get_example_file(), 'Example', end_pos=Position(y=6, x=6), amount_falling_bytes=12)
-	# aoc(get_input_file(), 'Solution', end_pos=Position(y=70, x=70), amount_falling_bytes=1024)
+	aoc(get_input_file(), 'Solution', end_pos=Position(y=70, x=70), amount_falling_bytes=1024)
