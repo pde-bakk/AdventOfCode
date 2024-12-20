@@ -17,8 +17,6 @@ def parse(data: str) -> tuple[ set[str], list[str]]:
 	return patterns, designs
 
 
-Node = namedtuple('Node', ['current', 'patterns'])
-
 def solve(patterns: set[str], designs: list[str], part: int = 1) -> int:
 	@lru_cache(maxsize=None)
 	def amount_combinations(design_left: str) -> int:
@@ -30,6 +28,7 @@ def solve(patterns: set[str], designs: list[str], part: int = 1) -> int:
 				amount = amount_combinations(design_left[len(pattern):])
 				x += amount
 		return x
+
 	possible = 0
 	for d in designs:
 		a = amount_combinations(d)
