@@ -41,7 +41,6 @@ Node = namedtuple('Node', 'len moves pos')
 
 @lru_cache(maxsize=None)
 def type_keys(start_char: str, target: str, keypad_nb: int) -> set[str]:
-	# print(f'{start_char}: {target}, {keypad_nb=}')
 	keypad = [numeric_keypad, directional_keypad][keypad_nb != 0]
 	start, = [key for key, value in keypad.items() if value == start_char]
 	q = [Node(moves='', pos=start, len=0)]
@@ -51,7 +50,6 @@ def type_keys(start_char: str, target: str, keypad_nb: int) -> set[str]:
 
 	while q:
 		node = q.pop(0)
-		# print(f'{node=}')
 		if keypad[node.pos] == target:
 			if len(node.moves) + 1 > shortest_length:
 				break
