@@ -23,7 +23,7 @@ def aoc(data: str, args, prefix: str) -> None:
 	if 1 in args.part:
 		part1 = solve(lines, part=1)
 		print(f'{prefix} part 1: {part1}')
-	elif 2 in args.part:
+	if 2 in args.part:
 		part2 = solve(lines, part=2)
 		print(f'{prefix} part 2: {part2}')
 

@@ -76,7 +76,7 @@ class Direction(Position):
 
 	@staticmethod
 	def get_directions(diagonal: bool = False) -> list['Direction']:
-		directions = [SOUTH, NORTH, EAST, WEST]
+		directions = [EAST, WEST, NORTH, SOUTH]
 		if diagonal:
 			directions.extend([NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST])
 		return directions
@@ -135,6 +135,15 @@ def ascii_to_direction(s: str) -> Direction:
 		'<': WEST,
 		'>': EAST,
 	}[s]
+
+def direction_to_ascii(direction: Direction) -> str:
+	return {
+		NORTH: '^',
+		SOUTH: 'v',
+		WEST: '<',
+		EAST: '>',
+	}[direction]
+
 
 
 # def get_direction_(direction: str) -> tuple[int, int]:
