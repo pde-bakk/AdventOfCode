@@ -20,10 +20,10 @@ def solve(lines: list[str], part: int = 1) -> int:
 
 def aoc(data: str, args, prefix: str) -> None:
 	lines = parse(data)
-	if 1 in args.part:
+	if args.part in [0, 1]:
 		part1 = solve(lines, part=1)
 		print(f'{prefix} part 1: {part1}')
-	if 2 in args.part:
+	if args.part in [0, 2]:
 		part2 = solve(lines, part=2)
 		print(f'{prefix} part 2: {part2}')
 
