@@ -54,3 +54,5 @@ def find_positions_where(grid: list[list | str], target: Any) -> list[Position]:
 		if item == target
 	]
 
+def rotate90degrees(l: list[str]) -> list[str]:
+	return [''.join(x) for x in zip(*l)]
