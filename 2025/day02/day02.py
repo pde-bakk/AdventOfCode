@@ -18,17 +18,13 @@ def parse(data: str) -> list[str]:
 def solve(lines: list[str]) -> Tuple[int, int]:
 	p1 = p2 = 0
 	for line in lines:
-		a, b = map(int, line.split('-'))
-		for x in range(a, b + 1):
-			s = str(x)
-			if 2 * str(s[:len(s)//2]) == s:
-				p1 += x
-			for l in range(1, len(s)):
-				if s[:l] * (len(s) // l) == s:
-					p2 += x
-					break
+		start, end = map(int, line.split('-'))
+		for nb in range(start, end + 1):
+			if re.fullmatch(r'(\d+)\1', str(nb)):
+				p1 += nb
+			if re.fullmatch(r'(\d+)\1+', str(nb)):
+				p2 += nb
 	return p1, p2
-
 
 def aoc(data: str, args, prefix: str) -> None:
 	lines = parse(data)
