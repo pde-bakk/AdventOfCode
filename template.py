@@ -1,5 +1,6 @@
 import sys
 import math
+from typing import Tuple
 
 sys.path.append('../..')
 from aoc_lib.get_input import get_input_file, get_example_file
@@ -13,19 +14,16 @@ def parse(data: str) -> list[str]:
 	return lines
 
 
-def solve(lines: list[str], part: int = 1) -> int:
-	result = 0
-	return result
+def solve(lines: list[str]) -> Tuple[int, int]:
+	p1 = p2 = 0
+	for line in lines:
+		pass
+	return p1, p2
 
-
-def aoc(data: str, args, prefix: str) -> None:
+def aoc(data: str, _, prefix: str) -> None:
 	lines = parse(data)
-	if args.part in [0, 1]:
-		part1 = solve(lines, part=1)
-		print(f'{prefix} part 1: {part1}')
-	if args.part in [0, 2]:
-		part2 = solve(lines, part=2)
-		print(f'{prefix} part 2: {part2}')
+	part1, part2 = solve(lines)
+	print(f'{prefix} part 1: {part1}, part 2: {part2}')
 
 
 if __name__ == '__main__':
