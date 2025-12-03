@@ -14,24 +14,21 @@ def parse(data: str) -> list[str]:
 	return lines
 
 
-def solve(lines: list[str]) -> Tuple[int, int]:
-	p1 = p2 = 0
+def solve(lines: list[str], battery_amount: int) -> int:
+	total_output_joltage = 0
 	for line in lines:
-		first = max(line[:-1])
-		second = max(line[line.index(first)+1:])
-		p1 += int(first + second)
-		l = []
-		for i in range(11, -1, -1):
-			item = max(line) if i == 0 else max(line[:-i])
-			l.append(item)
-			line = line[line.index(item)+1:]
-		p2 += int(''.join(l))
-	return p1, p2
+		joltage = ''
+		for i in range(battery_amount - 1, -1, -1):
+			joltage += max(line) if i == 0 else max(line[:-i])
+			line = line[line.index(joltage[-1])+1:]
+		total_output_joltage += int(joltage)
+	return total_output_joltage
 
 
-def aoc(data: str, _, prefix: str) -> None:
+def aoc(data: str, args, prefix: str) -> None:
 	lines = parse(data)
-	part1, part2 = solve(lines)
+	part1 = solve(lines, battery_amount=2)
+	part2 = solve(lines, battery_amount=12)
 	print(f'{prefix} part 1: {part1} and part 2: {part2}')
 
 
