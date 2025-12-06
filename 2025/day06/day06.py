@@ -1,4 +1,3 @@
-import itertools
 import sys
 import math
 from typing import Tuple
@@ -18,15 +17,12 @@ def parse(data: str) -> list[str]:
 def solve(lines: list[str]) -> Tuple[int, int]:
 	p1 = p2 = 0
 	l = []
-	operators = []
-	for line in lines:
+	operators = lines[-1].split()
+	for line in lines[:-1]:
 		x = line.split()
 		if any(c.isdigit() for c in line):
 			l.append(list(map(int, x)))
-		else:
-			operators = x
 	formulas = list(zip(*l[::-1]))
-	# print(formulas)
 	for i, f in enumerate(formulas):
 		if operators[i] == '+':
 			p1 += sum(f)
@@ -39,10 +35,8 @@ def solve(lines: list[str]) -> Tuple[int, int]:
 		nonlocal p2
 		if operator == '+':
 			p2 += sum(nbs)
-			print(f'summing {nbs} -> {sum(nbs)}')
 		elif operator == '*':
 			p2 += math.prod(nbs)
-			print(f'product {nbs} -> {math.prod(nbs)}')
 	for i in range(len(lines[0])):
 		if lines[-1][i] in '+*':
 			add()
@@ -51,7 +45,6 @@ def solve(lines: list[str]) -> Tuple[int, int]:
 		nb = ''.join(lines[j][i] for j in range(len(lines) - 1))
 		if nb.strip():
 			nbs.append(int(nb))
-			print(f'appending {nb} -> {int(nb)}')
 	add()
 
 	return p1, p2
