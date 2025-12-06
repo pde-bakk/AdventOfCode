@@ -23,7 +23,7 @@ def solve(lines: list[str]) -> Tuple[int, int]:
 def aoc(data: str, _, prefix: str) -> None:
 	lines = parse(data)
 	part1, part2 = solve(lines)
-	print(f'{prefix} part 1: {part1}, part 2: {part2}')
+	print(f'{prefix} part 1: {part1} and part 2: {part2}')
 
 
 if __name__ == '__main__':
