@@ -36,6 +36,8 @@ def distance(pos1: tuple[int, int], pos2: tuple[int, int]) -> float:
 def manhattan_distance(pos1: tuple[int, int], pos2: tuple[int, int]) -> int:
 	return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 
+def distance_3d(pos1: tuple[int, int, int], pos2: tuple[int, int, int]) -> float:
+	return math.sqrt(abs(pos1[0] - pos2[0]) ** 2 + abs(pos1[1] - pos2[1]) ** 2 + abs(pos1[2] - pos2[2]) ** 2)
 
 def replace_all(s: str, chars_to_replace: str, replacement: str = '') -> str:
 	for c in chars_to_replace:
