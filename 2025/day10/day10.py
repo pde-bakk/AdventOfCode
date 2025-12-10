@@ -1,8 +1,8 @@
 import re
 import sys
 from collections import namedtuple
-from scipy.optimize import milp, LinearConstraint, Bounds
-import numpy as np
+# from scipy.optimize import milp, LinearConstraint, Bounds
+import z3
 
 import math
 import heapq
@@ -42,30 +42,48 @@ def bfs_1(buttons: list[tuple[int, ...]], lights: tuple[bool, ...]) -> int:
 	return 0
 
 
-def solve_joltage(buttons: list[tuple[int, ...]], joltages: list[int]) -> int:
-	num_counters = len(joltages)
-	num_buttons = len(buttons)
+# def solve_joltage(buttons: list[tuple[int, ...]], joltages: list[int]) -> int:
+# 	num_counters = len(joltages)
+# 	num_buttons = len(buttons)
+#
+# 	# Build matrix A where each column is a button
+# 	A = np.zeros((num_counters, num_buttons), dtype=int)
+# 	for j, button in enumerate(buttons):
+# 		for idx in button:
+# 			A[idx, j] = 1
+#
+# 	# Minimize sum of all x_i (coefficients all 1)
+# 	c = np.ones(num_buttons)
+#
+# 	# Constraint: A @ x == target
+# 	constraints = LinearConstraint(A, joltages, joltages)
+#
+# 	# x_i >= 0, must be integers
+# 	integrality = np.ones(num_buttons)  # 1 = integer
+# 	bounds = Bounds(lb=0, ub=np.inf)
+#
+# 	result = milp(c, constraints=constraints, integrality=integrality, bounds=bounds)
+#
+# 	if result.success:
+# 		return int(round(result.fun))
+# 	return -1
 
-	# Build matrix A where each column is a button
-	A = np.zeros((num_counters, num_buttons), dtype=int)
-	for j, button in enumerate(buttons):
-		for idx in button:
-			A[idx, j] = 1
+def solve_joltage_z3(buttons: list[tuple[int, ...]], joltages: list[int]) -> int:
+	x = [z3.Int(f'x_{i}') for i in range(len(buttons))]
+	opt = z3.Optimize()
 
-	# Minimize sum of all x_i (coefficients all 1)
-	c = np.ones(num_buttons)
+	for xi in x:
+		opt.add(xi >= 0)
 
-	# Constraint: A @ x == target
-	constraints = LinearConstraint(A, joltages, joltages)
+	for counter_idx in range(len(joltages)):
+		counter_sum = z3.Sum([x[j] for j in range(len(buttons)) if counter_idx in buttons[j]])
+		opt.add(counter_sum == joltages[counter_idx])
 
-	# x_i >= 0, must be integers
-	integrality = np.ones(num_buttons)  # 1 = integer
-	bounds = Bounds(lb=0, ub=np.inf)
+	opt.minimize(z3.Sum(x))
 
-	result = milp(c, constraints=constraints, integrality=integrality, bounds=bounds)
-
-	if result.success:
-		return int(round(result.fun))
+	if opt.check() == z3.sat:
+		model = opt.model()
+		return sum(model[xi].as_long() for xi in x)
 	return -1
 
 def solve(lines: list[str]) -> Tuple[int, int]:
@@ -75,7 +93,7 @@ def solve(lines: list[str]) -> Tuple[int, int]:
 		bs = [tuple(map(int, button[1:-1].split(','))) for button in buttons]
 		a = bfs_1(bs, tuple(c == '#' for c in lights[1:-1]))
 		print(f'{lights}, done in {a}\n')
-		b = solve_joltage(bs, list(map(int, joltage[1:-1].split(','))),)
+		b = solve_joltage_z3(bs, list(map(int, joltage[1:-1].split(','))),)
 		print(f'{joltage}, done in {b}\n')
 		p1 += a
 		p2 += b
